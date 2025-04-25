@@ -1,0 +1,68 @@
+enum UserType {
+  MANAGER
+  MEMBER
+}
+
+interface MutationResponse {
+  code: String!
+  success: Boolean!
+  message: String
+  errors: [String]
+}
+
+type UserMutationResponse implements MutationResponse {
+  code: String!
+  success: Boolean!
+  message: String
+  errors: [String]
+  user: User
+}
+
+type AuthMutationResponse implements MutationResponse {
+  code: String!
+  success: Boolean!
+  message: String
+  errors: [String]
+  auth: AuthPayload
+}
+
+type Query {
+  users: [User!]!
+  user(userId: ID!): User
+}
+
+type Mutation {
+  createUser(
+    username: String!
+    email: String!
+    password: String!
+    role: UserType!
+  ): UserMutationResponse!
+  login(input: userInput): AuthMutationResponse
+}
+
+type User {
+  userId: ID!
+  username: String!
+  password: String!
+  email: String!
+  role: UserType!
+}
+
+type Team {
+  teamId: ID!
+  teamName: String!
+  managers: [User!]!
+  members: [User]
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  userId: ID!
+}
+
+input userInput {
+  email: String!
+  password: String!
+}
