@@ -7,7 +7,7 @@ A standalone REST API to manage teams.
 
 For both services:
 
-```bash
+```node
 npm install
 ```
 
