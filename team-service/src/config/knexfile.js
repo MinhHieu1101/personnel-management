@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 export default {
   development: {
@@ -18,7 +19,7 @@ export default {
     pool: { min: 0, max: 5 }, // number of connection in pool
     migrations: {
       tableName: "knex_migrations",
-      directory: "./src/migrations",
+      directory: "./migrations",
       extension: "js",
     },
   },
@@ -29,10 +30,21 @@ export default {
     pool: { min: 0, max: 5 },
     migrations: {
       tableName: "knex_migrations",
-      directory: "./src/migrations",
+      directory: "./migrations",
       extension: "js",
     },
   },
 };
 
-// npx knex --migrations-directory ./src/migrations migrate:make users  --esm
+// drop all tables to test migrations
+// DROP SCHEMA public CASCADE;
+// CREATE SCHEMA public;
+
+// manage db schema changes
+// up func -> apply changes
+// down func -> revert changes
+
+// npx knex --knexfile ./src/config/knexfile.js migrate:make users
+// npx knex migrate:make users
+// npx knex --knexfile ./src/config/knexfile.js migrate:latest
+// add --esm if not working

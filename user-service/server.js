@@ -22,8 +22,8 @@ const host = process.env.HOST || "localhost";
 
 if (process.env.NODE_ENV === "development") {
   db.sequelize
-    // .sync({ alter: true })
-    .sync({ force: true })
+    .sync({ alter: true })
+    //.sync({ force: true })
     .then(() => {
       console.log("Synced postgres db.");
     })

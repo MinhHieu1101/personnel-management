@@ -1,7 +1,5 @@
-import db from "../config/sequelize.js";
+import db from "../config/knexInstance.js";
 import { getInfo } from "../utils/getInfo.js";
-
-const { Team, User, Roster, sequelize } = db;
 
 // managed transactions handle committing or rolling back the transaction automatically
 const createTeam = async (req, res, next) => {
@@ -9,28 +7,39 @@ const createTeam = async (req, res, next) => {
   const userId = req.user.userId;
 
   try {
-    const result = await sequelize.transaction(async (transaction) => {
-      const isTeamValid = await Team.findOne({ where: { teamName: teamName } });
-      if (isTeamValid) {
-        return res.status(400).json({ message: "This team already existed." });
+    const team = await db.transaction(async (trx) => {
+      const isTeamFound = await trx("Teams").where({ teamName }).first();
+      if (isTeamFound) {
+        const err = new Error("This team already exists.");
+        err.status = 400;
+        throw err;
       }
-      const team = await Team.create({ teamName }, { transaction });
-      await Roster.create(
-        { teamId: team.teamId, userId, isLeader: true },
-        { transaction }
-      );
+
+      const newTeam = await trx("Teams")
+        .insert({ teamName })
+        .returning(["teamId", "teamName"]);
+      await trx("Rosters").insert({
+        teamId: newTeam.teamId,
+        userId: userId,
+        isLeader: true,
+      });
 
       if (managers && Array.isArray(managers)) {
         for (const manager of managers) {
           if (manager.managerId === userId) continue;
-          const managerInfo = await getInfo(User, manager.managerId);
+          const managerInfo = await getInfo(trx, "Users", manager.managerId);
           if (!managerInfo) {
-            return res
-              .status(400)
-              .json({ message: "This manager does not exist." });
+            const err = new Error("This manager does not exist.");
+            err.status = 400;
+            throw err;
           }
-          await Roster.create({
-            teamId: team.teamId,
+          if (managerInfo.username !== manager.managerName) {
+            const err = new Error("This manager's name is incorrect.");
+            err.status = 400;
+            throw err;
+          }
+          await trx("Rosters").insert({
+            teamId: newTeam.teamId,
             userId: manager.managerId,
           });
         }
@@ -38,23 +47,27 @@ const createTeam = async (req, res, next) => {
 
       if (members && Array.isArray(members)) {
         for (const member of members) {
-          if (member.memberId === userId) continue;
-          const memberInfo = await getInfo(User, member.memberId);
+          const memberInfo = await getInfo(trx, "Users", member.memberId);
           if (!memberInfo) {
-            return res
-              .status(400)
-              .json({ message: "This member does not exist." });
+            const err = new Error("This member does not exist.");
+            err.status = 400;
+            throw err;
           }
-          await Roster.create({
-            teamId: team.teamId,
+          if (memberInfo.username !== member.memberName) {
+            const err = new Error("This member's name is incorrect.");
+            err.status = 400;
+            throw err;
+          }
+          await trx("Rosters").insert({
+            teamId: newTeam.teamId,
             userId: member.memberId,
           });
         }
       }
 
-      return team;
+      return newTeam;
     });
-    return res.status(201).json({ team: result });
+    return res.status(201).json({ team });
   } catch (err) {
     next(err);
   }

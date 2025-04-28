@@ -1,12 +1,12 @@
-import db from "../config/sequelize.js";
+import db from "../config/knexInstance.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const roster = db.Roster;
-
 const authorizeRoles = async (req, res, next) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Not authenticated." });
+    const err = new Error("Not authenticated.");
+    err.status = 401;
+    throw err;
   }
 
   const { role } = req.user;
@@ -16,20 +16,20 @@ const authorizeRoles = async (req, res, next) => {
     const managersSegment = match ? true : false;
     if (managersSegment) {
       const { teamId } = req.params;
-      const currentRoster = await roster.findOne({
-        where: { teamId, userId: req.user.userId },
-      });
+      const currentRoster = await db("Rosters")
+        .where({ teamId, userId: req.user.userId })
+        .first();
       if (!currentRoster.isLeader) {
-        return res.status(403).json({
-          message: "Only the Lead Manager may perform this action.",
-        });
+        const err = new Error("Only the Lead Manager may perform this action.");
+        err.status = 403;
+        throw err;
       }
     }
     return next();
   } else {
-    return res
-      .status(403)
-      .json({ message: "Access to this route is not permitted." });
+    const err = new Error("Access to this route is not permitted.");
+    err.status = 403;
+    throw err;
   }
 };
 

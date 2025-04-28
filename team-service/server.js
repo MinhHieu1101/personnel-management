@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 import chalk from "chalk";
-import db from "./src/config/sequelize.js";
 import teamRoutes from "./src/routes/teamRoutes.js";
 import errorHandler from "./src/middleware/errorMiddleware.js";
 dotenv.config();
@@ -16,17 +15,6 @@ const corsOptions = {
   origin: "*",
   credentials: true,
 };
-
-if (process.env.NODE_ENV === "development") {
-  db.sequelize
-    .sync({ alter: true })
-    .then(() => {
-      console.log("Synced postgres db.");
-    })
-    .catch((err) => {
-      console.log(`Failed to sync db: ${err.message}`);
-    });
-}
 
 const app = express();
 

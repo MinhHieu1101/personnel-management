@@ -1,10 +1,8 @@
 import jwt from "jsonwebtoken";
-import db from "../config/sequelize.js";
+import db from "../config/knexInstance.js";
 import { generateAccessToken } from "../utils/generateTokens.js";
 import dotenv from "dotenv";
 dotenv.config();
-
-const user = db.User;
 
 const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -12,9 +10,9 @@ const protect = async (req, res, next) => {
     ? authHeader.split(" ")[1]
     : null;
   if (!accessToken) {
-    return res
-      .status(401)
-      .json({ message: "Not Authorized. Invalid access token." });
+    const err = new Error("Not Authorized. Invalid access token.");
+    err.status = 401;
+    throw err;
   }
 
   try {
@@ -22,16 +20,17 @@ const protect = async (req, res, next) => {
       accessToken,
       process.env.ACCESS_TOKEN_SECRET
     );
-    req.user = await user.findByPk(decodedAccess.userId, {
-      attributes: { exclude: ["password"] },
-    });
+    req.user = await db("Users")
+      .select("userId", "username", "email")
+      .where("userId", decodedAccess.userId)
+      .first();
     return next();
   } catch (err) {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      return res
-        .status(401)
-        .json({ message: "Refresh token missing. Please log in again." });
+      const err = new Error("Refresh token missing. Please log in again.");
+      err.status = 401;
+      throw err;
     }
 
     try {
@@ -41,14 +40,15 @@ const protect = async (req, res, next) => {
       );
       const newAccessToken = generateAccessToken(decodedRefresh.userId);
       res.setHeader("Authorization", `Bearer ${newAccessToken}`);
-      req.user = await user.findByPk(decodedRefresh.userId, {
-        attributes: { exclude: ["password"] },
-      });
+      req.user = await db("Users")
+        .select("userId", "username", "email")
+        .where("userId", decodedRefresh.userId)
+        .first();
       return next();
     } catch {
-      return res
-        .status(403)
-        .json({ message: "Refresh token expired. Please log in." });
+      const err = new Error("Refresh token expired. Please log in.");
+      err.status = 403;
+      throw err;
     }
   }
 };

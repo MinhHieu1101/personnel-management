@@ -1,6 +1,6 @@
-export const getInfo = async (table, id) => {
-  const info = await table.findByPk(id, {
-    attributes: { exclude: ["password"] },
-  });
-  return info;
+export const getInfo = async (trx, table, id) => {
+  return trx(table)
+    .select("userId", "username", "email")
+    .where("userId", id)
+    .first();
 };
