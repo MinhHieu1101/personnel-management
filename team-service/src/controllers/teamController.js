@@ -1,79 +1,112 @@
 import db from "../config/knexInstance.js";
-import { getInfo } from "../utils/getInfo.js";
+import {
+  teamSchema,
+  memberSchema,
+  managerSchema,
+} from "../schemas/joiSchemas.js";
+import { processArray } from "../utils/processArray.js";
+import { processRequestBody } from "../utils/processRequestBody.js";
 
 // managed transactions handle committing or rolling back the transaction automatically
 const createTeam = async (req, res, next) => {
-  const { teamName, managers, members } = req.body;
+  const { error, value } = teamSchema.validate(req.body);
+  if (error) {
+    error.status = 400;
+    return next(error);
+  }
+
+  const { teamName, managers, members } = value;
   const userId = req.user.userId;
 
   try {
-    const team = await db.transaction(async (trx) => {
+    const result = await db.transaction(async (trx) => {
       const isTeamFound = await trx("Teams").where({ teamName }).first();
       if (isTeamFound) {
         const err = new Error("This team already exists.");
         err.status = 400;
         throw err;
+      } else if (!isTeamFound) {
+        const newTeam = await trx("Teams")
+          .insert({ teamName })
+          .returning(["teamId", "teamName"]);
+
+        console.log(newTeam);
+
+        const newLeader = await trx("Rosters")
+          .insert({
+            teamId: newTeam[0].teamId,
+            userId: userId,
+            isLeader: true,
+          })
+          .returning(["teamId", "isLeader", "userId"]);
+
+        console.log(newLeader);
+
+        const managerList = await processArray(
+          trx,
+          newTeam[0].teamId,
+          managers,
+          userId,
+          "manager"
+        );
+
+        const memberList = await processArray(
+          trx,
+          newTeam[0].teamId,
+          members,
+          userId,
+          "member"
+        );
+
+        return {
+          teamId: newTeam[0].teamId,
+          teamName: newTeam[0].teamName,
+          managers: managerList,
+          members: memberList,
+        };
       }
-
-      const newTeam = await trx("Teams")
-        .insert({ teamName })
-        .returning(["teamId", "teamName"]);
-      await trx("Rosters").insert({
-        teamId: newTeam.teamId,
-        userId: userId,
-        isLeader: true,
-      });
-
-      if (managers && Array.isArray(managers)) {
-        for (const manager of managers) {
-          if (manager.managerId === userId) continue;
-          const managerInfo = await getInfo(trx, "Users", manager.managerId);
-          if (!managerInfo) {
-            const err = new Error("This manager does not exist.");
-            err.status = 400;
-            throw err;
-          }
-          if (managerInfo.username !== manager.managerName) {
-            const err = new Error("This manager's name is incorrect.");
-            err.status = 400;
-            throw err;
-          }
-          await trx("Rosters").insert({
-            teamId: newTeam.teamId,
-            userId: manager.managerId,
-          });
-        }
-      }
-
-      if (members && Array.isArray(members)) {
-        for (const member of members) {
-          const memberInfo = await getInfo(trx, "Users", member.memberId);
-          if (!memberInfo) {
-            const err = new Error("This member does not exist.");
-            err.status = 400;
-            throw err;
-          }
-          if (memberInfo.username !== member.memberName) {
-            const err = new Error("This member's name is incorrect.");
-            err.status = 400;
-            throw err;
-          }
-          await trx("Rosters").insert({
-            teamId: newTeam.teamId,
-            userId: member.memberId,
-          });
-        }
-      }
-
-      return newTeam;
     });
-    return res.status(201).json({ team });
+    return res.status(201).json(result);
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
 
-const addMember = async (req, res, next) => {};
+const addMember = async (req, res, next) => {
+  const { error, value } = memberSchema.validate(req.body);
+  if (error) {
+    error.status = 400;
+    //return next(error);
+    console.log(error);
+  }
+
+  const { memberId, memberName } = value;
+  const { teamId } = req.params;
+  console.log(req.params);
+
+  try {
+    const task = await processRequestBody(
+      db,
+      teamId,
+      memberId,
+      memberName,
+      "member"
+    );
+    console.log(task);
+
+    const result = {
+      teamId,
+      memberId,
+      memberName,
+    };
+
+    return res.status(201).json(result);
+  } catch (err) {
+    console.log(err);
+    //next(err);
+  }
+};
 
 const removeMember = async (req, res, next) => {};
 

@@ -2,7 +2,13 @@ import jwt from "jsonwebtoken";
 import db from "../config/knexInstance.js";
 import { generateAccessToken } from "../utils/generateTokens.js";
 import dotenv from "dotenv";
-dotenv.config();
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -21,7 +27,7 @@ const protect = async (req, res, next) => {
       process.env.ACCESS_TOKEN_SECRET
     );
     req.user = await db("Users")
-      .select("userId", "username", "email")
+      .select("userId", "username", "email", "role")
       .where("userId", decodedAccess.userId)
       .first();
     return next();
@@ -41,7 +47,7 @@ const protect = async (req, res, next) => {
       const newAccessToken = generateAccessToken(decodedRefresh.userId);
       res.setHeader("Authorization", `Bearer ${newAccessToken}`);
       req.user = await db("Users")
-        .select("userId", "username", "email")
+        .select("userId", "username", "email", "role")
         .where("userId", decodedRefresh.userId)
         .first();
       return next();

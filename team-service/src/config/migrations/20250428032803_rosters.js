@@ -19,8 +19,6 @@ export async function up(knex) {
       .onDelete("CASCADE")
       .onUpdate("CASCADE");
     table.boolean("isLeader").notNullable().defaultTo(false);
-    table.timestamps(true, true);
-
     /*
     table.index(["teamId"], "idx_rosters_team");
     table.index(["userId"], "idx_rosters_user");

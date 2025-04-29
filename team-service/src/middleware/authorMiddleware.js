@@ -27,7 +27,9 @@ const authorizeRoles = async (req, res, next) => {
     }
     return next();
   } else {
-    const err = new Error("Access to this route is not permitted.");
+    const err = new Error(
+      "Access to this route is not permitted for a member."
+    );
     err.status = 403;
     throw err;
   }

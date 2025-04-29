@@ -67,7 +67,7 @@ const resolvers = {
             httpOnly: true,
             sameSite: "none",
             secure: process.env.NODE_ENV === "production",
-            maxAge: 24 * 60 * 60 * 1000, // 1d
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1d
           });
           return {
             code: "200",

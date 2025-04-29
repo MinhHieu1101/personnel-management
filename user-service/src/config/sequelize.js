@@ -4,6 +4,15 @@ import userModel from "../models/userModel.js";
 import teamModel from "../models/teamModel.js";
 import rosterModel from "../models/rosterModel.js";
 
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+
 const conn =
   process.env.NODE_ENV === "development"
     ? dbConfig.development

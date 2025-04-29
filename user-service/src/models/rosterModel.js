@@ -24,7 +24,6 @@ const rosterModel = (sequelize, DataTypes) => {
     },
     {
       tableName: "Rosters",
-      timestamps: true,
     }
   );
 

@@ -1,7 +1,6 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import dotenv from "dotenv";
 import chalk from "chalk";
 import express from "express";
 import http from "http";
@@ -12,17 +11,20 @@ import path from "path";
 import fs from "fs";
 import resolvers from "./src/resolvers/resolvers.js";
 import db from "./src/config/sequelize.js";
-dotenv.config();
+import dotenv from "dotenv";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const port = process.env.PORT || 4000;
 const host = process.env.HOST || "localhost";
 
 if (process.env.NODE_ENV === "development") {
   db.sequelize
-    .sync({ alter: true })
+    .sync() // create if not exist
+    //.sync({ alter: true })
     //.sync({ force: true })
     .then(() => {
       console.log("Synced postgres db.");
