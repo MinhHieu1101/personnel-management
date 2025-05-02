@@ -19,6 +19,11 @@ const authorizeRoles = async (req, res, next) => {
       const currentRoster = await db("Rosters")
         .where({ teamId, userId: req.user.userId })
         .first();
+      if (!currentRoster) {
+        const err = new Error(`Team with ID ${teamId} does not exist.`);
+        err.status = 403;
+        throw err;
+      }
       if (!currentRoster.isLeader) {
         const err = new Error("Only the Lead Manager may perform this action.");
         err.status = 403;

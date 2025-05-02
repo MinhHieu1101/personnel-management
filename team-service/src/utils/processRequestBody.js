@@ -10,14 +10,16 @@ export const processRequestBody = async (
   const userInfo = await getInfo(db, "Users", userId);
   if (!userInfo || userInfo.username !== userName) {
     const err = new Error(
-      `This member ${userId} does not exist or has an incorrect username.`
+      `${role} with ID ${userId} was not found or the username does not match.`
     );
     err.status = 400;
     throw err;
   }
 
   if (userInfo.role !== role.toUpperCase()) {
-    const err = new Error(`This ${role} cannot be added through this route.`);
+    const err = new Error(
+      `This user cannot be added or removed through this route.`
+    );
     err.status = 400;
     throw err;
   }
@@ -29,20 +31,24 @@ export const processRequestBody = async (
     .first();
 
   if (!isTeamFound) {
-    const err = new Error(`This team ${teamId} does not exist.`);
+    const err = new Error(`Team with ID ${teamId} does not exist.`);
     err.status = 400;
     throw err;
   }
 
   const isUserFound = await db("Rosters")
+    .join("Teams", "Rosters.teamId", "Teams.teamId")
+    .select("Rosters.*", "Teams.teamName")
     .where({
-      teamId,
-      userId,
+      "Rosters.teamId": teamId,
+      "Rosters.userId": userId,
     })
     .first();
 
   if (isUserFound) {
-    const err = new Error(`This member already joined team ${teamId}.`);
+    const err = new Error(
+      `This user already joined team ${isUserFound.teamName} (ID: ${teamId}).`
+    );
     err.status = 400;
     throw err;
   }

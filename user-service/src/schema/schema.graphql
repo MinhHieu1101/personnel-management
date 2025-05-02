@@ -10,6 +10,42 @@ interface MutationResponse {
   errors: [String]
 }
 
+input UserInput {
+  email: String!
+  password: String!
+}
+
+type User {
+  userId: ID!
+  username: String!
+  password: String!
+  email: String!
+  role: UserType!
+}
+
+type Member {
+  memberId: ID!
+  memberName: String!
+}
+
+type Manager {
+  managerId: ID!
+  managerName: String!
+}
+
+type Team {
+  teamId: ID!
+  teamName: String!
+  managers: [Manager!]!
+  members: [Member]
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  userId: ID!
+}
+
 type UserMutationResponse implements MutationResponse {
   code: String!
   success: Boolean!
@@ -29,6 +65,7 @@ type AuthMutationResponse implements MutationResponse {
 type Query {
   users: [User!]!
   user(userId: ID!): User
+  team(teamId: ID!): Team
 }
 
 type Mutation {
@@ -38,31 +75,5 @@ type Mutation {
     password: String!
     role: UserType!
   ): UserMutationResponse!
-  login(input: userInput): AuthMutationResponse
-}
-
-type User {
-  userId: ID!
-  username: String!
-  password: String!
-  email: String!
-  role: UserType!
-}
-
-type Team {
-  teamId: ID!
-  teamName: String!
-  managers: [User!]!
-  members: [User]
-}
-
-type AuthPayload {
-  accessToken: String!
-  refreshToken: String!
-  userId: ID!
-}
-
-input userInput {
-  email: String!
-  password: String!
+  login(input: UserInput!): AuthMutationResponse!
 }

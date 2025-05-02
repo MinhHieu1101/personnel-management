@@ -6,6 +6,8 @@ import {
 } from "../utils/generateTokens.js";
 
 const user = db.User;
+const team = db.Team;
+const roster = db.Roster;
 
 const resolvers = {
   Query: {
@@ -14,6 +16,60 @@ const resolvers = {
     },
     user: async (_, { userId }) => {
       return await user.findByPk(userId);
+    },
+    team: async (_, { teamId }) => {
+      const query = await team.findOne({
+        where: { teamId },
+        include: [
+          {
+            model: roster,
+            as: "rosters",
+            include: [
+              {
+                model: user,
+                as: "user",
+                attributes: ["userId", "username", "role"],
+              },
+            ],
+          },
+          {
+            model: user,
+            as: "managers",
+            attributes: ["userId", "username"],
+            through: { attributes: [] },
+            required: false,
+            where: { role: "MANAGER" },
+          },
+          {
+            model: user,
+            as: "members",
+            attributes: ["userId", "username"],
+            through: { attributes: [] },
+            required: false,
+            where: { role: "MEMBER" },
+          },
+        ],
+      });
+
+      const teamInstance = query.get({ plain: true });
+      console.log(JSON.stringify(teamInstance, null, 2));
+
+      const managers = teamInstance.managers.map((manager) => ({
+        managerId: manager.userId,
+        managerName: manager.username,
+      }));
+
+      const members = teamInstance.members.map((member) => ({
+        memberId: member.userId,
+        memberName: member.username,
+      }));
+
+      return {
+        teamId: teamInstance.teamId,
+        teamName: teamInstance.teamName,
+        managers,
+        members,
+      };
     },
   },
 

@@ -26,14 +26,14 @@ const teamModel = (sequelize, DataTypes) => {
       foreignKey: "teamId",
       otherKey: "userId",
       as: "managers",
-      scope: { role: "manager" },
+      scope: { role: "MANAGER" },
     });
     Team.belongsToMany(models.User, {
       through: models.Roster,
       foreignKey: "teamId",
       otherKey: "userId",
       as: "members",
-      scope: { role: "member" },
+      scope: { role: "MEMBER" },
     });
     // One-To-Many relationship
     Team.hasMany(models.Roster, {
