@@ -147,7 +147,7 @@ const SignupForm = () => {
               {...register("email", {
                 required: "Email is required",
                 pattern: {
-                  value: /^\S+@\S+$/i,
+                  value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$/i,
                   message: "Enter a valid email address",
                 },
               })}
@@ -176,9 +176,11 @@ const SignupForm = () => {
               }`}
               {...register("password", {
                 required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password should be at least 6 characters",
+                pattern: {
+                  value:
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/,
+                  message:
+                    "Password should contain at least 8 characters, with a mix of lowercase letters, uppercase letters, and special symbols.",
                 },
               })}
             />

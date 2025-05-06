@@ -4,7 +4,7 @@ import { TableRow } from "../components/TableRow";
 
 const MemberList = () => {
   return (
-    <table className="min-w-7xl divide-y divide-gray-200">
+    <table className="mt-4 min-w-7xl divide-y divide-gray-200">
       <TableHead />
       <tbody className="bg-white divide-y divide-gray-200">
         <TableRow
