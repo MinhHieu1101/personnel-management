@@ -7,6 +7,9 @@ import {
   FETCH_USER_REQUEST,
   fetchUserSuccess,
   fetchUserFailure,
+  FETCH_TEAMS_REQUEST,
+  fetchTeamsSuccess,
+  fetchTeamsFailure,
   ADD_USER_REQUEST,
   createUserSuccess,
   createUserFailure,
@@ -36,6 +39,18 @@ const USER_QUERY = gql`
       email
       role
       createdAt
+    }
+  }
+`;
+
+// need saga
+const TEAMS_QUERY = gql`
+  query Teams($userId: ID!) {
+    teams(userId: $userId) {
+      teamId
+      teamName
+      managers
+      members
     }
   }
 `;

@@ -5,6 +5,9 @@ import {
   FETCH_USER_REQUEST,
   FETCH_USER_SUCCESS,
   FETCH_USER_FAILURE,
+  FETCH_TEAMS_REQUEST,
+  FETCH_TEAMS_SUCCESS,
+  FETCH_TEAMS_FAILURE,
   ADD_USER_REQUEST,
   ADD_USER_SUCCESS,
   ADD_USER_FAILURE,
@@ -13,6 +16,7 @@ import {
 const initialState = {
   users: [],
   user: null,
+  teams: [],
   loading: false,
   code: null,
   success: false,
@@ -38,6 +42,15 @@ const userReducer = (state = initialState, action) => {
       return { ...state, loading: false, user: action.payload };
 
     case FETCH_USER_FAILURE:
+      return { ...state, loading: false, message: action.payload };
+
+    case FETCH_TEAMS_REQUEST:
+      return { ...state, loading: true };
+
+    case FETCH_TEAMS_SUCCESS:
+      return { ...state, loading: false, teams: action.payload };
+
+    case FETCH_TEAMS_FAILURE:
       return { ...state, loading: false, message: action.payload };
 
     case ADD_USER_REQUEST:

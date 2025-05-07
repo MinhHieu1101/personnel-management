@@ -21,6 +21,21 @@ const resolvers = {
     user: async (_, { userId }) => {
       return await user.findByPk(userId);
     },
+    teams: async (_, { userId }) => {
+      const result = await user.findByPk(userId, {
+        include: {
+          model: team,
+          as: "teams",
+          attributes: ["teamId", "teamName"],
+          through: {
+            attributes: [],
+          },
+        },
+      });
+      return {
+        teams: result,
+      };
+    },
     team: async (_, { teamId }) => {
       const query = await team.findOne({
         where: { teamId },
