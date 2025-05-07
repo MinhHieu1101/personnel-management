@@ -1,3 +1,6 @@
+scalar EmailAddress
+scalar DateTime
+
 enum UserType {
   MANAGER
   MEMBER
@@ -11,7 +14,7 @@ interface MutationResponse {
 }
 
 input UserInput {
-  email: String!
+  email: EmailAddress!
   password: String!
 }
 
@@ -19,8 +22,9 @@ type User {
   userId: ID!
   username: String!
   password: String!
-  email: String!
+  email: EmailAddress!
   role: UserType!
+  createdAt: DateTime
 }
 
 type Member {
@@ -63,7 +67,7 @@ type AuthMutationResponse implements MutationResponse {
 }
 
 type Query {
-  users: [User!]!
+  users(role: UserType!): [User!]!
   user(userId: ID!): User
   team(teamId: ID!): Team
 }
@@ -71,7 +75,7 @@ type Query {
 type Mutation {
   createUser(
     username: String!
-    email: String!
+    email: EmailAddress!
     password: String!
     role: UserType!
   ): UserMutationResponse!

@@ -1,5 +1,6 @@
 import db from "../config/sequelize.js";
 import bcrypt from "bcryptjs";
+import { DateTimeResolver, EmailAddressResolver } from "graphql-scalars";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -10,9 +11,13 @@ const team = db.Team;
 const roster = db.Roster;
 
 const resolvers = {
+  DateTime: DateTimeResolver,
+  EmailAddress: EmailAddressResolver,
   Query: {
-    users: async () => {
-      return await user.findAll();
+    users: async (_, { role }) => {
+      return await user.findAll({
+        where: { role },
+      });
     },
     user: async (_, { userId }) => {
       return await user.findByPk(userId);

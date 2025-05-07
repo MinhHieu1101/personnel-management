@@ -1,100 +1,59 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { createUserRequest } from "../redux/actions/userActions";
 
 const SignupForm = () => {
-  //const [signupState, setSignupState] = useState(fieldsState);
-  const [errorMessage, setErrorMessage] = useState("");
-  /*   const [showPasswords, setShowPasswords] = useState(
-    fields.reduce((acc, field) => {
-      acc[field.id] = false;
-      return acc;
-    }, {})
-  );
-
-  const togglePasswordVisibility = (id) => {
-    setShowPasswords((prevState) => ({
-      ...prevState,
-      [id]: !prevState[id],
-    }));
-  }; */
-
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
+
+  const {
+    loading,
+    code,
+    success,
+    message,
+    errors: validationErrors = [],
+  } = useSelector((state) => state.user);
 
   const onSubmit = (data) => {
     console.log("Signup Data:", data);
+    dispatch(
+      createUserRequest(data.username, data.email, data.password, data.role)
+    );
   };
 
-  const handleChange = (e) => {
-    const { id, value, name } = e.target;
-    setSignupState({ ...signupState, [name]: value });
-
-    if (id === "passwordSignup" || id === "confirmPassword") {
-      const password =
-        id === "passwordSignup" ? value : signupState.newPassword;
-      const confirmPassword =
-        id === "confirmPassword" ? value : signupState.confirmPassword;
-
-      if (confirmPassword !== "" && password !== confirmPassword) {
-        setErrorMessage("New password do not match");
-      } else {
-        setErrorMessage("");
-      }
-    }
-  };
-
-  const handleSignup = (e) => {
-    e.preventDefault();
-    if (signupState.newPassword !== signupState.confirmPassword) {
-      setErrorMessage("Confirm your password");
-    } else {
-      const finalSignupState = {
-        name: signupState.newName,
-        email: signupState.newEmail,
-        password: signupState.newPassword,
-      };
-      dispatch(register(finalSignupState))
-        .unwrap()
-        .then(() => {
-          toast.success(
-            "Your account has been created. Please check your email for the verification link and log in!",
-            {
-              position: "top-right",
-              autoClose: 1000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-            }
-          );
-        })
-        .catch((error) => {
-          err("%Register failed:", "color: red;", error);
-          if (signupState.confirmPassword === "") {
-            setErrorMessage("Confirm your password");
-          }
-        });
-    }
-
-    if (message.general) {
-      toast.error(message.general, {
+  useEffect(() => {
+    if (success) {
+      toast.success(message, {
         position: "top-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
+        autoClose: 3000,
+      });
+      reset();
+    }
+  }, [success, message, reset]);
+
+  useEffect(() => {
+    if (validationErrors.length) {
+      validationErrors.forEach((errMsg) =>
+        toast.error(errMsg, { position: "top-right", autoClose: 5000 })
+      );
+    }
+  }, [validationErrors]);
+
+  useEffect(() => {
+    if (!success && code === "500") {
+      toast.error(message || "Server error. Please try again later.", {
+        position: "top-right",
+        autoClose: 5000,
       });
     }
-  };
+  }, [success, code, message]);
 
   return (
     <div className="selection:bg-emerald-500 selection:text-white flex justify-center items-center p-8 landscape:md:pt-24 landscape:lg:pt-0">
@@ -147,7 +106,7 @@ const SignupForm = () => {
               {...register("email", {
                 required: "Email is required",
                 pattern: {
-                  value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$/i,
+                  value: /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/i,
                   message: "Enter a valid email address",
                 },
               })}
@@ -178,9 +137,9 @@ const SignupForm = () => {
                 required: "Password is required",
                 pattern: {
                   value:
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/,
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                   message:
-                    "Password should contain at least 8 characters, with a mix of lowercase letters, uppercase letters, and special symbols.",
+                    "Password should contain at least 8 characters, with a mix of lowercase letters, uppercase letters, digits, and special symbols.",
                 },
               })}
             />
@@ -223,9 +182,10 @@ const SignupForm = () => {
           <div className="flex items-center justify-between">
             <button
               type="submit"
+              disabled={loading}
               className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
-              Sign Up
+              {loading ? "Creating…" : "Sign Up"}
             </button>
           </div>
         </form>

@@ -27,7 +27,7 @@ axiosInstance.interceptors.response.use(
     const authHeader = response.headers["authorization"];
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const newToken = authHeader.split(" ")[1];
-      store.dispatch({ type: "AUTH/TOKEN_REFRESH", payload: newToken });
+      store.dispatch({ type: "TOKEN_RENEW", payload: newToken });
     }
     return response;
   },
