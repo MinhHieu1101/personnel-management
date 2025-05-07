@@ -5,7 +5,7 @@ import userReducer from "./userReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  teams: teamReducer,
+  team: teamReducer,
   user: userReducer,
 });
 

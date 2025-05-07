@@ -1,4 +1,3 @@
-scalar EmailAddress
 scalar DateTime
 
 enum UserType {
@@ -14,7 +13,7 @@ interface MutationResponse {
 }
 
 input UserInput {
-  email: EmailAddress!
+  email: String!
   password: String!
 }
 
@@ -22,7 +21,7 @@ type User {
   userId: ID!
   username: String!
   password: String!
-  email: EmailAddress!
+  email: String!
   role: UserType!
   createdAt: DateTime
 }
@@ -75,7 +74,7 @@ type Query {
 type Mutation {
   createUser(
     username: String!
-    email: EmailAddress!
+    email: String!
     password: String!
     role: UserType!
   ): UserMutationResponse!

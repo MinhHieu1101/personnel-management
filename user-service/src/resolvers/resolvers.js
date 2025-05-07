@@ -1,6 +1,6 @@
 import db from "../config/sequelize.js";
 import bcrypt from "bcryptjs";
-import { DateTimeResolver, EmailAddressResolver } from "graphql-scalars";
+import { DateTimeResolver } from "graphql-scalars";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -12,7 +12,6 @@ const roster = db.Roster;
 
 const resolvers = {
   DateTime: DateTimeResolver,
-  EmailAddress: EmailAddressResolver,
   Query: {
     users: async (_, { role }) => {
       return await user.findAll({
@@ -90,7 +89,7 @@ const resolvers = {
         return {
           code: "200",
           success: true,
-          message: "User created successfully",
+          message: `Welcome on board ${username}^^`,
           user: userRes,
         };
       } catch (err) {

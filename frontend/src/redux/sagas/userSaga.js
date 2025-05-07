@@ -91,7 +91,7 @@ function* fetchUserSaga(action) {
   }
 }
 
-function* createUserSaga(action) {
+/* function* createUserSaga(action) {
   try {
     const variables = action.payload;
     const data = yield call(client.request, CREATE_USER_MUTATION, variables);
@@ -99,6 +99,34 @@ function* createUserSaga(action) {
   } catch (err) {
     const msg = err.response?.errors?.[0]?.message || err.message;
     yield put(createUserFailure(msg));
+  }
+} */
+
+function* createUserSaga(action) {
+  try {
+    console.log("createUserSaga triggered with action:", action);
+
+    const variables = action.payload;
+    console.log("Variables for request:", variables);
+
+    //const data = yield call(client.request, CREATE_USER_MUTATION, variables);
+
+    // bind the client.request method so "this" isn't lost
+    const data = yield call(
+      [client, client.request],
+      CREATE_USER_MUTATION,
+      variables
+    );
+    console.log("Received data from mutation:", data);
+
+    yield put(createUserSuccess(data.createUser));
+    console.log("Dispatched createUserSuccess with:", data.createUser);
+  } catch (err) {
+    console.error("Error in createUserSaga:", err);
+
+    const msg = err.response?.errors?.[0]?.message || err.message;
+    yield put(createUserFailure(msg));
+    console.error("Dispatched createUserFailure with message:", msg);
   }
 }
 
