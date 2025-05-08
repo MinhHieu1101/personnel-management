@@ -17,6 +17,7 @@ axiosInstance.interceptors.request.use(
     if (auth.accessToken) {
       config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
     }
+    console.log(`Current Token: ${auth.accessToken}`);
     return config;
   },
   (error) => Promise.reject(error)
@@ -27,6 +28,7 @@ axiosInstance.interceptors.response.use(
     const authHeader = response.headers["authorization"];
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const newToken = authHeader.split(" ")[1];
+      console.log(`New Token: ${newToken}`);
       store.dispatch({ type: "TOKEN_RENEW", payload: newToken });
     }
     return response;
