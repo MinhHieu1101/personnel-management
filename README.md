@@ -5,7 +5,7 @@ A standalone REST API to manage teams.
 
 ## Installation
 
-For both services:
+For all services:
 
 ```node
 npm install
