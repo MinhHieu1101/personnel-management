@@ -28,7 +28,11 @@ const LOGIN_MUTATION = gql`
 
 function* loginSaga(action) {
   try {
-    const result = yield call(client.request, LOGIN_MUTATION, action.payload);
+    const result = yield call(
+      [client, client.request],
+      LOGIN_MUTATION,
+      action.payload
+    );
     const response = result.login;
     yield put(loginSuccess(response));
   } catch (err) {

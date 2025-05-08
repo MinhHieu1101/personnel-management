@@ -22,19 +22,23 @@ const resolvers = {
       return await user.findByPk(userId);
     },
     teams: async (_, { userId }) => {
-      const result = await user.findByPk(userId, {
-        include: {
-          model: team,
-          as: "teams",
+      try {
+        const teams = await team.findAll({
           attributes: ["teamId", "teamName"],
-          through: {
-            attributes: [],
-          },
-        },
-      });
-      return {
-        teams: result,
-      };
+          include: [
+            {
+              model: roster,
+              as: "rosters",
+              where: { userId },
+              attributes: [],
+            },
+          ],
+        });
+        return teams;
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
     },
     team: async (_, { teamId }) => {
       const query = await team.findOne({
@@ -120,6 +124,40 @@ const resolvers = {
         };
       }
     },
+
+    updateUser: async (_, { userId, username, email }) => {
+      try {
+        await user.update(
+          {
+            username,
+            email,
+          },
+          {
+            where: {
+              userId,
+            },
+          }
+        );
+        return {
+          code: "200",
+          success: true,
+          message: `Updated ${username}'s profile`,
+          user: null,
+        };
+      } catch (err) {
+        return {
+          code:
+            err.name === "SequelizeUniqueConstraintError" ||
+            "SequelizeValidationError"
+              ? "400"
+              : "500",
+          success: false,
+          errors: err.errors ? err.errors.map((error) => error.message) : null,
+          user: null,
+        };
+      }
+    },
+
     login: async (_, args, context) => {
       const { email, password } = args.input;
       try {

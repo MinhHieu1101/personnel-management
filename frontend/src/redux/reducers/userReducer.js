@@ -18,6 +18,7 @@ const initialState = {
   user: null,
   teams: [],
   loading: false,
+  teamsLoading: false,
   code: null,
   success: false,
   message: null,
@@ -45,13 +46,13 @@ const userReducer = (state = initialState, action) => {
       return { ...state, loading: false, message: action.payload };
 
     case FETCH_TEAMS_REQUEST:
-      return { ...state, loading: true };
+      return { ...state, teamsLoading: true };
 
     case FETCH_TEAMS_SUCCESS:
-      return { ...state, loading: false, teams: action.payload };
+      return { ...state, teamsLoading: false, teams: action.payload };
 
     case FETCH_TEAMS_FAILURE:
-      return { ...state, loading: false, message: action.payload };
+      return { ...state, teamsLoading: false, message: action.payload };
 
     case ADD_USER_REQUEST:
       return {

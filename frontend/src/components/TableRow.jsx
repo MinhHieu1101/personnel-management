@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import AnimatedButton from "./AnimatedButton";
-import { DetailModal } from "./DetailModal";
 import { AiOutlineUserDelete } from "react-icons/ai";
+import { BiSolidUserDetail } from "react-icons/bi";
 
-export const TableRow = ({ id, name, email, role, c_date }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+export const TableRow = ({ id, name, email, role, c_date, onView }) => {
   const handleDelete = (e, id) => {
     e.preventDefault();
     console.log(`Hello ${id}`);
   };
+
   return (
     <tr>
       <td className="px-6 py-4 whitespace-nowrap">{name}</td>
@@ -17,7 +16,15 @@ export const TableRow = ({ id, name, email, role, c_date }) => {
       <td className="px-6 py-4 whitespace-nowrap">{role}</td>
       <td className="px-6 py-4 whitespace-nowrap">{c_date}</td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <DetailModal />
+        <AnimatedButton
+          onClick={onView}
+          text="View"
+          icon={BiSolidUserDetail}
+          borderColor="border-emerald-600"
+          bgColor="bg-emerald-600"
+          textColor="text-emerald-600"
+          extra="w-22 h-10"
+        />
         <AnimatedButton
           onClick={(e) => handleDelete(e, id)}
           text="Delete"

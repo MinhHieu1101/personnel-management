@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-/* import { useDispatch, useSelector } from "react-redux"; */
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import AnimatedButton from "./AnimatedButton";
+import { loginRequest } from "../redux/actions/authActions";
 
 const SigninForm = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-
-  const [error, setError] = useState("");
 
   const {
     register,
@@ -17,8 +16,15 @@ const SigninForm = () => {
     formState: { errors },
   } = useForm();
 
+  const {
+    loading,
+    success,
+    message,
+    errors: validationErrors,
+  } = useSelector((state) => state.auth);
+
   const onSubmit = (data) => {
-    console.log("Form Data:", data);
+    dispatch(loginRequest(data.email, data.password));
   };
 
   /*   useEffect(() => {
@@ -27,9 +33,18 @@ const SigninForm = () => {
     }
   }, [navigate, isLoggedIn]); */
 
-  const handleChange = (e) => {
-    setLoginState({ ...loginState, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    if (success) {
+      toast.success(message || "Logged in successfully!");
+      //navigate("/teams");
+    }
+  }, [success, message, navigate]);
+
+  useEffect(() => {
+    if (message && !success && !loading) {
+      toast.error(message);
+    }
+  }, [message, success, loading]);
 
   return (
     <div className="selection:bg-emerald-500 selection:text-white flex justify-center items-center p-8">
@@ -55,7 +70,7 @@ const SigninForm = () => {
               {...register("email", {
                 required: "Email is required",
                 pattern: {
-                  value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$/i,
+                  value: /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/i,
                   message: "Enter a valid email address",
                 },
               })}
@@ -85,9 +100,9 @@ const SigninForm = () => {
                 required: "Password is required",
                 pattern: {
                   value:
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/,
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                   message:
-                    "Password should contain at least 8 characters, with a mix of lowercase letters, uppercase letters, and special symbols.",
+                    "Password should contain at least 8 characters, with a mix of lowercase letters, uppercase letters, digits, and special symbols.",
                 },
               })}
             />

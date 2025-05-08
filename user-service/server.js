@@ -47,8 +47,10 @@ const server = new ApolloServer({
 });
 await server.start();
 
+const allowedOrigins = ["http://localhost:5173"];
+
 const corsOptions = {
-  origin: "*",
+  origin: allowedOrigins,
   credentials: true,
 };
 

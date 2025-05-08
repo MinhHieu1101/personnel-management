@@ -2,6 +2,7 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
+  LOGOUT,
   TOKEN_RENEW,
 } from "../actions/authActions";
 
@@ -10,7 +11,6 @@ const initialState = {
   accessToken: null,
   refreshToken: null,
   loading: false,
-  error: null,
   message: null,
   code: null,
   success: false,
@@ -38,7 +38,15 @@ const authReducer = (state = initialState, action) => {
     }
 
     case LOGIN_FAILURE:
-      return { ...state, loading: false, error: action.payload };
+      return {
+        ...state,
+        loading: false,
+        success: false,
+        message: action.payload,
+      };
+
+    case LOGOUT:
+      return initialState;
 
     case TOKEN_RENEW:
       return { ...state, accessToken: action.payload };

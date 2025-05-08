@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomCard } from "../components/Card";
+import { CustomCard } from "../components/CustomCard";
 import { TeamModal } from "../components/TeamModal";
 
 const TeamList = () => {

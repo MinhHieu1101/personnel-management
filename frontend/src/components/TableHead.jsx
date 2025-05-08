@@ -14,7 +14,7 @@ export const TableHead = () => {
           Role
         </th>
         <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-          Created Date
+          Joined Date
         </th>
         <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
           Action

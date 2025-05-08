@@ -43,14 +43,11 @@ const USER_QUERY = gql`
   }
 `;
 
-// need saga
 const TEAMS_QUERY = gql`
   query Teams($userId: ID!) {
     teams(userId: $userId) {
       teamId
       teamName
-      managers
-      members
     }
   }
 `;
@@ -84,7 +81,7 @@ const CREATE_USER_MUTATION = gql`
 
 function* fetchUsersSaga(action) {
   try {
-    const data = yield call(client.request, USERS_QUERY, {
+    const data = yield call([client, client.request], USERS_QUERY, {
       role: action.payload,
     });
     yield put(fetchUsersSuccess(data.users));
@@ -96,7 +93,7 @@ function* fetchUsersSaga(action) {
 
 function* fetchUserSaga(action) {
   try {
-    const data = yield call(client.request, USER_QUERY, {
+    const data = yield call([client, client.request], USER_QUERY, {
       userId: action.payload,
     });
     yield put(fetchUserSuccess(data.user));
@@ -106,47 +103,67 @@ function* fetchUserSaga(action) {
   }
 }
 
-/* function* createUserSaga(action) {
+/* function* fetchTeamsSaga(action) {
   try {
-    const variables = action.payload;
-    const data = yield call(client.request, CREATE_USER_MUTATION, variables);
-    yield put(createUserSuccess(data.createUser));
+    const data = yield call([client, client.request], TEAMS_QUERY, {
+      userId: action.payload,
+    });
+    yield put(fetchTeamsSuccess(data.teams));
   } catch (err) {
     const msg = err.response?.errors?.[0]?.message || err.message;
-    yield put(createUserFailure(msg));
+    yield put(fetchTeamsFailure(msg));
   }
 } */
 
+  function* fetchTeamsSaga(action) {
+    try {
+      console.log("[fetchTeamsSaga] Triggered with action:", action);
+  
+      // Log the request details
+      const variables = { userId: action.payload };
+      console.log("[fetchTeamsSaga] Calling TEAMS_QUERY with variables:", variables);
+  
+      // Make the API call
+      const data = yield call([client, client.request], TEAMS_QUERY, variables);
+      console.log("[fetchTeamsSaga] API call successful. Received data:", data);
+  
+      // Check if teams data exists
+      if (data && data.teams) {
+        console.log("[fetchTeamsSaga] Dispatching fetchTeamsSuccess with teams:", data.teams);
+        yield put(fetchTeamsSuccess(data.teams));
+      } else {
+        console.warn("[fetchTeamsSaga] Data received but no teams found:", data);
+        yield put(fetchTeamsFailure("No teams found."));
+      }
+    } catch (err) {
+      // Log the error details for debugging
+      console.error("[fetchTeamsSaga] Error occurred:", err);
+  
+      // Construct error message from API response if available
+      const msg = err.response?.errors?.[0]?.message || err.message;
+      console.log("[fetchTeamsSaga] Dispatching fetchTeamsFailure with message:", msg);
+      yield put(fetchTeamsFailure(msg));
+    }
+  }  
+
 function* createUserSaga(action) {
   try {
-    console.log("createUserSaga triggered with action:", action);
-
     const variables = action.payload;
-    console.log("Variables for request:", variables);
-
-    //const data = yield call(client.request, CREATE_USER_MUTATION, variables);
-
-    // bind the client.request method so "this" isn't lost
     const data = yield call(
       [client, client.request],
       CREATE_USER_MUTATION,
       variables
     );
-    console.log("Received data from mutation:", data);
-
     yield put(createUserSuccess(data.createUser));
-    console.log("Dispatched createUserSuccess with:", data.createUser);
   } catch (err) {
-    console.error("Error in createUserSaga:", err);
-
     const msg = err.response?.errors?.[0]?.message || err.message;
     yield put(createUserFailure(msg));
-    console.error("Dispatched createUserFailure with message:", msg);
   }
 }
 
 export default function* userSaga() {
   yield takeLatest(FETCH_USERS_REQUEST, fetchUsersSaga);
   yield takeLatest(FETCH_USER_REQUEST, fetchUserSaga);
+  yield takeLatest(FETCH_TEAMS_REQUEST, fetchTeamsSaga);
   yield takeLatest(ADD_USER_REQUEST, createUserSaga);
 }

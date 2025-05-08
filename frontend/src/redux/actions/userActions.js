@@ -44,14 +44,14 @@ export const fetchUserFailure = (error) => ({
   payload: error,
 });
 
-export const fetchTeamsRequest = (users) => ({
+export const fetchTeamsRequest = (teams) => ({
   type: FETCH_TEAMS_REQUEST,
-  payload: users,
+  payload: teams,
 });
 
-export const fetchTeamsSuccess = (users) => ({
+export const fetchTeamsSuccess = (teams) => ({
   type: FETCH_TEAMS_SUCCESS,
-  payload: users,
+  payload: teams,
 });
 
 export const fetchTeamsFailure = (error) => ({

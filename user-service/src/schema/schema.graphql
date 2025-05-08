@@ -79,5 +79,10 @@ type Mutation {
     password: String!
     role: UserType!
   ): UserMutationResponse!
+  updateUser(
+    userId: ID!
+    username: String!
+    email: String!
+  ): UserMutationResponse!
   login(input: UserInput!): AuthMutationResponse!
 }
