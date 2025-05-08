@@ -14,5 +14,8 @@ npm install
 ## Usage
 
 ```node
+// for user and team services
 npm start
+// for frontend
+npm run dev
 ```
