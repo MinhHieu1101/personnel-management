@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import AnimatedButton from "./AnimatedButton";
 import { loginRequest } from "../redux/actions/authActions";
+import { TbEye, TbEyeClosed } from "react-icons/tb";
 
 const SigninForm = () => {
   const dispatch = useDispatch();
@@ -15,16 +15,13 @@ const SigninForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
-  const {
-    loading,
-    success,
-    message,
-    errors: validationErrors,
-  } = useSelector((state) => state.auth);
+  const [showPassword, setShowPassword] = useState(false);
+  const { loading, success, message, user } = useSelector(
+    (state) => state.auth
+  );
 
   const onSubmit = (data) => {
-    dispatch(loginRequest(data.email, data.password));
+    dispatch(loginRequest(data));
   };
 
   /*   useEffect(() => {
@@ -35,8 +32,11 @@ const SigninForm = () => {
 
   useEffect(() => {
     if (success) {
-      toast.success(message || "Logged in successfully!");
-      //navigate("/teams");
+      toast.success(message, {
+        position: "top-right",
+        autoClose: 1500,
+      });
+      user.role === "MEMBER" ? navigate("/members") : navigate("/managers");
     }
   }, [success, message, navigate]);
 
@@ -82,7 +82,7 @@ const SigninForm = () => {
             )}
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label
               htmlFor="password"
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -91,9 +91,9 @@ const SigninForm = () => {
             </label>
             <input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+              className={`pr-10 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
                 errors.password ? "border-red-500" : ""
               }`}
               {...register("password", {
@@ -102,10 +102,19 @@ const SigninForm = () => {
                   value:
                     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                   message:
-                    "Password should contain at least 8 characters, with a mix of lowercase letters, uppercase letters, digits, and special symbols.",
+                    "Password must be 8+ characters and include uppercase, lowercase, digit, and special char (e.g., @$!%?&).",
                 },
               })}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className={`absolute right-2 top-3/4 pb-1 transform -translate-y-1/2 ${
+                errors.password ? "pb-8" : ""
+              }`}
+            >
+              {showPassword ? <TbEye /> : <TbEyeClosed />}
+            </button>
             {errors.password && (
               <p className="text-red-500 text-xs italic mt-1">
                 {errors.password.message}

@@ -1,8 +1,8 @@
 import React from "react";
-import { UserCompositionModal } from "./UserCompositionModal";
+import AnimatedButton from "./AnimatedButton";
 import { RiTeamLine } from "react-icons/ri";
 
-export const CustomCard = ({ id, name, number }) => {
+export const CustomCard = ({ id, name, number, onView }) => {
   return (
     <div className="hover:fill-slate-700 hover:drop-shadow-lg hover:drop-shadow-slate-500/50 flex flex-col justify-center w-sm">
       <div className="flex flex-col h-full shadow justify-between rounded-lg pb-8 p-6 xl:p-8 mt-3 bg-gray-50">
@@ -15,18 +15,14 @@ export const CustomCard = ({ id, name, number }) => {
             <p>{number} people</p>
           </div>
         </div>
-        <UserCompositionModal
-          title="Team Composition"
-          buttonIcon={RiTeamLine}
-          icon="Mngr."
-          heading1="Managers"
-          node="John Doe"
-          subnode="Founder & CEO"
-          icon2="Mbr."
-          heading2="Members"
-          node2="Alice Johnson"
-          subnode2="HR Manager"
-          extra={true}
+        <AnimatedButton
+          onClick={onView}
+          text="View"
+          icon={RiTeamLine}
+          borderColor="border-emerald-600"
+          bgColor="bg-emerald-600"
+          textColor="text-emerald-600"
+          extra="w-22 h-10"
         />
       </div>
     </div>

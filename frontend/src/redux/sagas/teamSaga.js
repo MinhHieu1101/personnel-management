@@ -6,9 +6,9 @@ import {
   fetchTeamFailure,
 } from "../actions/teamActions";
 
-function* fetchTeamSaga() {
+function* fetchTeamSaga(action) {
   try {
-    const response = yield call(axiosInstance.get, "/teams");
+    const response = yield call(axiosInstance.get, `/${action.payload}`);
     yield put(fetchTeamSuccess(response.data));
   } catch (err) {
     yield put(fetchTeamFailure(err.response?.data?.message || err.message));

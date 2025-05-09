@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { createUserRequest } from "../redux/actions/userActions";
+import { TbEye, TbEyeClosed } from "react-icons/tb";
 
 const SignupForm = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,7 @@ const SignupForm = () => {
     formState: { errors },
     reset,
   } = useForm();
-
+  const [showPassword, setShowPassword] = useState(false);
   const {
     loading,
     code,
@@ -32,7 +33,7 @@ const SignupForm = () => {
     if (success) {
       toast.success(message, {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 1500,
       });
       reset();
     }
@@ -119,7 +120,7 @@ const SignupForm = () => {
           </div>
 
           {/* Password Field */}
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               htmlFor="password"
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -128,9 +129,9 @@ const SignupForm = () => {
             </label>
             <input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+              className={`pr-10 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
                 errors.password ? "border-red-500" : ""
               }`}
               {...register("password", {
@@ -139,10 +140,19 @@ const SignupForm = () => {
                   value:
                     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                   message:
-                    "Password should contain at least 8 characters, with a mix of lowercase letters, uppercase letters, digits, and special symbols.",
+                    "Password must be 8+ characters and include uppercase, lowercase, digit, and special char (e.g., @$!%?&).",
                 },
               })}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className={`absolute right-2 top-3/4 pb-1 transform -translate-y-1/2 ${
+                errors.password ? "pb-8" : ""
+              }`}
+            >
+              {showPassword ? <TbEye /> : <TbEyeClosed />}
+            </button>
             {errors.password && (
               <p className="text-red-500 text-xs italic mt-1">
                 {errors.password.message}

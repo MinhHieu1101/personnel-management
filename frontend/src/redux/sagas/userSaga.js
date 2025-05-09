@@ -48,6 +48,7 @@ const TEAMS_QUERY = gql`
     teams(userId: $userId) {
       teamId
       teamName
+      rosterCount
     }
   }
 `;
@@ -103,7 +104,7 @@ function* fetchUserSaga(action) {
   }
 }
 
-/* function* fetchTeamsSaga(action) {
+function* fetchTeamsSaga(action) {
   try {
     const data = yield call([client, client.request], TEAMS_QUERY, {
       userId: action.payload,
@@ -113,38 +114,7 @@ function* fetchUserSaga(action) {
     const msg = err.response?.errors?.[0]?.message || err.message;
     yield put(fetchTeamsFailure(msg));
   }
-} */
-
-  function* fetchTeamsSaga(action) {
-    try {
-      console.log("[fetchTeamsSaga] Triggered with action:", action);
-  
-      // Log the request details
-      const variables = { userId: action.payload };
-      console.log("[fetchTeamsSaga] Calling TEAMS_QUERY with variables:", variables);
-  
-      // Make the API call
-      const data = yield call([client, client.request], TEAMS_QUERY, variables);
-      console.log("[fetchTeamsSaga] API call successful. Received data:", data);
-  
-      // Check if teams data exists
-      if (data && data.teams) {
-        console.log("[fetchTeamsSaga] Dispatching fetchTeamsSuccess with teams:", data.teams);
-        yield put(fetchTeamsSuccess(data.teams));
-      } else {
-        console.warn("[fetchTeamsSaga] Data received but no teams found:", data);
-        yield put(fetchTeamsFailure("No teams found."));
-      }
-    } catch (err) {
-      // Log the error details for debugging
-      console.error("[fetchTeamsSaga] Error occurred:", err);
-  
-      // Construct error message from API response if available
-      const msg = err.response?.errors?.[0]?.message || err.message;
-      console.log("[fetchTeamsSaga] Dispatching fetchTeamsFailure with message:", msg);
-      yield put(fetchTeamsFailure(msg));
-    }
-  }  
+}
 
 function* createUserSaga(action) {
   try {

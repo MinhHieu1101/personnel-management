@@ -20,7 +20,7 @@ import {
 } from "../actions/teamActions";
 
 const initialState = {
-  users: [],
+  people: [],
   loading: false,
   message: null,
   errors: [],
@@ -32,7 +32,7 @@ const teamReducer = (state = initialState, action) => {
       return { ...state, loading: true };
 
     case FETCH_TEAM_SUCCESS:
-      return { ...state, loading: false, users: action.payload };
+      return { ...state, loading: false, people: action.payload };
 
     case FETCH_TEAM_FAILURE:
       return { ...state, loading: false, error: action.payload };

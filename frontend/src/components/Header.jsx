@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import logo from "/teams.svg";
 import { FiMoon, FiSun, FiX, FiMenu } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/actions/authActions";
 
 function Header() {
   const [nav, setNav] = useState(false);
-  const currentUser = "null";
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
   /*   const dark = useSelector((state) => state.darkMode.dark);
   const { user: currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -30,6 +33,7 @@ function Header() {
     setTimeout(() => {
       const logoutConfirm = window.confirm("Are you sure you want to logout ?");
       if (logoutConfirm) {
+        localStorage.removeItem("currentUser");
         dispatch(logout());
       }
     }, 0);
@@ -98,7 +102,7 @@ function Header() {
                     onClick={handleLogout}
                   >
                     <span className="block group-hover:hidden">Log Out</span>
-                    <span className="hidden group-hover:block">{`Goodbye, ${currentUser.name}`}</span>
+                    <span className="hidden group-hover:block">{`Goodbye, ${currentUser.username}`}</span>
                   </button>
                 </div>
               </>

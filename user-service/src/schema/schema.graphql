@@ -17,10 +17,16 @@ input UserInput {
   password: String!
 }
 
+input CreateUserInput {
+  username: String!
+  email: String!
+  password: String!
+  role: UserType!
+}
+
 type User {
   userId: ID!
   username: String!
-  password: String!
   email: String!
   role: UserType!
   createdAt: DateTime
@@ -41,12 +47,9 @@ type Team {
   teamName: String!
   managers: [Manager!]!
   members: [Member]
-}
-
-type AuthPayload {
-  accessToken: String!
-  refreshToken: String!
-  userId: ID!
+  totalManagers: Int!
+  totalMembers: Int
+  rosterCount: Int!
 }
 
 type UserMutationResponse implements MutationResponse {
@@ -60,9 +63,11 @@ type UserMutationResponse implements MutationResponse {
 type AuthMutationResponse implements MutationResponse {
   code: String!
   success: Boolean!
-  message: String
+  message: String!
   errors: [String]
-  auth: AuthPayload
+  accessToken: String
+  refreshToken: String
+  user: User
 }
 
 type Query {
@@ -73,16 +78,12 @@ type Query {
 }
 
 type Mutation {
-  createUser(
-    username: String!
-    email: String!
-    password: String!
-    role: UserType!
-  ): UserMutationResponse!
+  createUser(input: CreateUserInput!): UserMutationResponse!
   updateUser(
     userId: ID!
     username: String!
     email: String!
   ): UserMutationResponse!
   login(input: UserInput!): AuthMutationResponse!
+  renewToken(userId: ID!): AuthMutationResponse!
 }

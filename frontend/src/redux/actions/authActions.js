@@ -11,7 +11,27 @@ export const loginRequest = (credentials) => ({
   payload: credentials,
 });
 
-export const loginSuccess = (user) => ({ type: LOGIN_SUCCESS, payload: user });
+// sensitive tokens should not be stored in the store
+export const loginSuccess = ({
+  code,
+  success,
+  message,
+  errors,
+  accessToken,
+  refreshToken,
+  user,
+}) => ({
+  type: LOGIN_SUCCESS,
+  payload: {
+    code,
+    success,
+    message,
+    errors,
+    accessToken,
+    refreshToken,
+    user,
+  },
+});
 
 export const loginFailure = (error) => ({
   type: LOGIN_FAILURE,

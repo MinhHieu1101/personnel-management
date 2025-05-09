@@ -9,12 +9,12 @@ const rosterModel = (sequelize, DataTypes) => {
       },
       teamId: {
         type: DataTypes.INTEGER,
-        references: { model: "Teams", key: "id" },
+        references: { model: "Teams", key: "teamId" },
         onDelete: "CASCADE",
       },
       userId: {
         type: DataTypes.INTEGER,
-        references: { model: "Users", key: "id" },
+        references: { model: "Users", key: "userId" },
         onDelete: "CASCADE",
       },
       isLeader: {

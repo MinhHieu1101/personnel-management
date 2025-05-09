@@ -2,13 +2,15 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
-  LOGOUT,
   TOKEN_RENEW,
 } from "../actions/authActions";
 
+const persistedUser = JSON.parse(localStorage.getItem("currentUser"));
+const currentAccess = sessionStorage.getItem("accessToken");
+
 const initialState = {
-  userId: null,
-  accessToken: null,
+  user: persistedUser || null,
+  accessToken: currentAccess || null,
   refreshToken: null,
   loading: false,
   message: null,
@@ -23,17 +25,17 @@ const authReducer = (state = initialState, action) => {
       return { ...state, loading: true };
 
     case LOGIN_SUCCESS: {
-      const { code, success, message, errors, auth } = action.payload;
+      const { code, success, message, accessToken, refreshToken, user } =
+        action.payload;
       return {
         ...state,
         loading: false,
         code,
         success,
         message,
-        errors,
-        accessToken: auth.accessToken,
-        refreshToken: auth.refreshToken,
-        userId: auth.userId,
+        accessToken,
+        refreshToken,
+        user,
       };
     }
 
@@ -44,9 +46,6 @@ const authReducer = (state = initialState, action) => {
         success: false,
         message: action.payload,
       };
-
-    case LOGOUT:
-      return initialState;
 
     case TOKEN_RENEW:
       return { ...state, accessToken: action.payload };

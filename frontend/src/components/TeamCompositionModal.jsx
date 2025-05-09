@@ -42,7 +42,7 @@ export const TeamCompositionModal = ({ isOpen, setIsOpen, userId }) => {
                               className="flex items-center space-x-2"
                             >
                               <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold">
-                                <TbUsersGroup />
+                                <TbUsersGroup className="w-8 h-8" />
                               </div>
                               <div>
                                 <h3 className="text-lg font-semibold">

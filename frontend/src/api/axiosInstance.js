@@ -13,11 +13,11 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const { auth } = store.getState();
-    if (auth.accessToken) {
-      config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
+    const { accessToken } = store.getState().auth;
+    if (accessToken) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
-    console.log(`Current Token: ${auth.accessToken}`);
+    console.log(`Current Token: ${accessToken}`);
     return config;
   },
   (error) => Promise.reject(error)

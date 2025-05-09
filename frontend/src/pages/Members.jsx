@@ -5,14 +5,23 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsersRequest } from "../redux/actions/userActions";
 import { TeamCompositionModal } from "../components/TeamCompositionModal";
+import { useNavigate } from "react-router-dom";
 
 const MemberList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, message, users } = useSelector((state) => state.user);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   // lift modal state here to prevent re-renders
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalUserId, setModalUserId] = useState(null);
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/");
+    }
+  }, [navigate, currentUser]);
 
   useEffect(() => {
     dispatch(fetchUsersRequest("MEMBER"));
@@ -37,7 +46,11 @@ const MemberList = () => {
             <TableRow
               key={user.userId}
               id={user.userId}
-              name={user.username}
+              name={
+                user.userId === currentUser.userId
+                  ? `${user.username} (You)`
+                  : user.username
+              }
               email={user.email}
               role={user.role}
               c_date={new Date(user.createdAt).toLocaleString()}
