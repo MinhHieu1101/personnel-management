@@ -36,6 +36,9 @@ export default {
   },
 };
 
+// create a db
+// CREATE DATABASE personnel;
+
 // drop all tables to test migrations
 // DROP SCHEMA public CASCADE;
 // CREATE SCHEMA public;
@@ -48,3 +51,7 @@ export default {
 // npx knex migrate:make users
 // npx knex --knexfile ./src/config/knexfile.js migrate:latest
 // add --esm if not working
+
+// populate database with test data
+// npx knex --knexfile ./src/config/knexfile.js seed:make usersSeeder
+// npx knex --knexfile ./src/config/knexfile.js seed:run

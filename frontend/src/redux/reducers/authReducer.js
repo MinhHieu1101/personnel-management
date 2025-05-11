@@ -2,7 +2,9 @@ import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
-  TOKEN_RENEW,
+  TOKEN_RENEW_REQUEST,
+  TOKEN_RENEW_SUCCESS,
+  TOKEN_RENEW_FAILURE,
 } from "../actions/authActions";
 
 const persistedUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -47,8 +49,19 @@ const authReducer = (state = initialState, action) => {
         message: action.payload,
       };
 
-    case TOKEN_RENEW:
+    case TOKEN_RENEW_REQUEST:
+      return { ...state, loading: true };
+
+    case TOKEN_RENEW_SUCCESS:
       return { ...state, accessToken: action.payload };
+
+    case TOKEN_RENEW_FAILURE:
+      return {
+        code,
+        loading: false,
+        success: false,
+        message: action.payload,
+      };
 
     default:
       return state;

@@ -4,8 +4,11 @@ import {
   LOGIN_REQUEST,
   loginSuccess,
   loginFailure,
+  TOKEN_RENEW_REQUEST,
+  tokenRenewSuccess,
+  tokenRenewFailure,
+  logout,
   LOGOUT,
-  TOKEN_RENEW,
 } from "../actions/authActions";
 
 const client = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
@@ -33,7 +36,7 @@ const LOGIN_MUTATION = gql`
 `;
 
 const RENEW_MUTATION = gql`
-  mutation RenewToken($userId: String!) {
+  mutation RenewToken($userId: ID!) {
     renewToken(userId: $userId) {
       code
       success
@@ -86,12 +89,17 @@ function* renewTokenSaga(action) {
       RENEW_MUTATION,
       action.payload
     );
-    const { code, success, message, errors, accessToken } = result.login;
-  } catch (error) {}
+    const { accessToken } = result.renewToken;
+    sessionStorage.setItem("accessToken", accessToken);
+    yield put(tokenRenewSuccess(accessToken));
+  } catch (err) {
+    yield put(tokenRenewFailure());
+    yield put(logout());
+  }
 }
 
 export default function* authSaga() {
   yield takeLatest(LOGIN_REQUEST, loginSaga);
-  yield takeLatest(TOKEN_RENEW, renewTokenSaga);
+  yield takeLatest(TOKEN_RENEW_REQUEST, renewTokenSaga);
   yield takeLatest(LOGOUT, clearLocalStorage);
 }

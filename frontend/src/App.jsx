@@ -17,7 +17,7 @@ function App() {
           <div className="absolute inset-0 -z-10 h-full w-full dark:bg-black bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] [background-size:16px_16px]"></div>
         </div>
 
-        <div className="relative z-10 flex h-full flex-col items-center justify-normal px-4">
+        <div className="relative z-10 flex h-full flex-col items-center justify-normal px-4 overflow-auto">
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<UserAuthentication />} />

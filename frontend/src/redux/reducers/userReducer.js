@@ -14,7 +14,8 @@ import {
 } from "../actions/userActions";
 
 const initialState = {
-  users: [],
+  members: [],
+  managers: [],
   user: null,
   teams: [],
   loading: false,
@@ -30,8 +31,15 @@ const userReducer = (state = initialState, action) => {
     case FETCH_USERS_REQUEST:
       return { ...state, loading: true };
 
-    case FETCH_USERS_SUCCESS:
-      return { ...state, loading: false, users: action.payload };
+    case FETCH_USERS_SUCCESS: {
+      const { role, users } = action.payload;
+      if (role === "MEMBER") {
+        return { ...state, loading: false, members: users };
+      } else if (role === "MANAGER") {
+        return { ...state, loading: false, managers: users };
+      }
+      return { ...state, loading: false };
+    }
 
     case FETCH_USERS_FAILURE:
       return { ...state, loading: false, message: action.payload };

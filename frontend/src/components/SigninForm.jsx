@@ -124,7 +124,7 @@ const SigninForm = () => {
           <div className="flex items-center justify-between">
             <button
               type="submit"
-              className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-emerald-700 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               Log In
             </button>

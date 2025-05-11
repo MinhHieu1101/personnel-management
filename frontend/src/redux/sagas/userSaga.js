@@ -81,11 +81,10 @@ const CREATE_USER_MUTATION = gql`
 `;
 
 function* fetchUsersSaga(action) {
+  const { role } = action.payload;
   try {
-    const data = yield call([client, client.request], USERS_QUERY, {
-      role: action.payload,
-    });
-    yield put(fetchUsersSuccess(data.users));
+    const data = yield call([client, client.request], USERS_QUERY, { role });
+    yield put(fetchUsersSuccess(role, data.users));
   } catch (err) {
     const msg = err.response?.errors?.[0]?.message || err.message;
     yield put(fetchUsersFailure(msg));

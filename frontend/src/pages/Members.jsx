@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const MemberList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, message, users } = useSelector((state) => state.user);
+  const { loading, message, members } = useSelector((state) => state.user);
   const { user: currentUser } = useSelector((state) => state.auth);
 
   // lift modal state here to prevent re-renders
@@ -41,8 +41,8 @@ const MemberList = () => {
     <>
       <table className="mt-4 min-w-7xl divide-y divide-gray-200">
         <TableHead />
-        <tbody className="bg-white divide-y divide-gray-200">
-          {users.map((user) => (
+        <tbody className="bg-white divide-y divide-gray-200 overflow-auto">
+          {members.map((user) => (
             <TableRow
               key={user.userId}
               id={user.userId}

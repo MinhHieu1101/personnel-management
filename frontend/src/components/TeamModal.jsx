@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogPanel,
@@ -11,29 +11,90 @@ import {
 } from "@headlessui/react";
 import AnimatedButton from "./AnimatedButton";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsersRequest } from "../redux/actions/userActions";
+import axiosInstance from "../api/axiosInstance";
+import { toast } from "react-toastify";
 
 export const TeamModal = () => {
+  const dispatch = useDispatch();
+
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const [teamName, setTeamName] = useState("");
+  //const [selectedUsers, setSelectedUsers] = useState({});
+  const [selectedMemberIds, setSelectedMemberIds] = useState([]);
+  const [selectedManagerIds, setSelectedManagerIds] = useState([]);
 
-  const users = [
-    { id: 1, username: "John Doe", email: "john@example.com" },
-    { id: 2, username: "Jane Smith", email: "jane@example.com" },
-    { id: 3, username: "Alice Johnson", email: "alice@example.com" },
-  ];
+  const { loading, message, members, managers } = useSelector(
+    (state) => state.user
+  );
+  const { user: currentUser } = useSelector((state) => state.auth);
 
-  const users2 = [
-    { id: 3, username: "Batman", email: "john@example.com" },
-    { id: 4, username: "Superman", email: "jane@example.com" },
-    { id: 5, username: "Flash", email: "alice@example.com" },
-  ];
+  useEffect(() => {
+    if (!isOpen) return;
 
-  const [selectedUsers, setSelectedUsers] = useState({});
+    if (selectedTabIndex === 0) {
+      dispatch(fetchUsersRequest("MEMBER"));
+    } else {
+      dispatch(fetchUsersRequest("MANAGER"));
+    }
+  }, [isOpen, selectedTabIndex, dispatch]);
 
-  const handleCheckboxChange = (id) => {
-    setSelectedUsers((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  const toggleMember = (id) => {
+    setSelectedMemberIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const toggleManager = (id) => {
+    setSelectedManagerIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const handleCreate = async () => {
+    if (!teamName.trim()) {
+      return toast.error("Team name is required");
+    }
+
+    const membersPayload = selectedMemberIds
+      .map((userId) => {
+        const user = members.find((u) => u.userId === userId);
+        if (!user) return null;
+        return { memberId: userId, memberName: user.username };
+      })
+      .filter(Boolean);
+
+    // Build managers payload (exclude creator if present)
+    const managersPayload = selectedManagerIds
+      .filter((id) => id !== currentUser.userId)
+      .map((userId) => {
+        const user = managers.find((u) => u.userId === userId);
+        if (!user) return null;
+        return { managerId: userId, managerName: user.username };
+      })
+      .filter(Boolean);
+
+    const requestBody = {
+      teamName,
+      members: membersPayload,
+      managers: managersPayload,
+    };
+
+    console.log("CREATE_TEAM_REQUEST_BODY:", requestBody);
+
+    try {
+      /* await axiosInstance.post("/teams", requestBody); */
+      toast.success(`Team "${teamName}" created!`, { autoClose: 3000 });
+      setIsOpen(false);
+      setTeamName("");
+      setSelectedMemberIds([]);
+      setSelectedManagerIds([]);
+    } catch (err) {
+      console.error("CREATE_TEAM_ERROR", err);
+      toast.error(err.response?.data?.message || "Failed to create team");
+    }
   };
 
   return (
@@ -62,18 +123,23 @@ export const TeamModal = () => {
                 type="text"
                 id="teamName"
                 name="teamName"
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
                 className="peer bg-transparent h-10 w-full rounded-full text-gray-200 placeholder-transparent ring-2 px-2 ring-gray-500 focus:ring-emerald-600 focus:outline-none"
                 placeholder="Team Name"
               />
               <label
-                for="teamName"
+                htmlFor="teamName"
                 className="absolute cursor-text left-0 -top-3 text-sm text-gray-500 bg-inherit mx-1 px-1 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3 peer-focus:text-emerald-600 peer-focus:text-sm transition-all"
               >
                 Team Name
               </label>
             </div>
           </div>
-          <TabGroup>
+          <TabGroup
+            selectedIndex={selectedTabIndex}
+            onChange={setSelectedTabIndex}
+          >
             <TabList className="flex space-x-2 bg-emerald-200 p-1 rounded-full mt-4 w-auto">
               <Tab className="w-60 px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500 text-emerald-900 hover:bg-white/10 data-selected:bg-white data-selected:text-emerald-700 data-selected:shadow">
                 Members
@@ -84,10 +150,10 @@ export const TeamModal = () => {
             </TabList>
 
             <TabPanels className="mt-4">
-              <TabPanel className="p-3 rounded-xl bg-gray-50">
-                {users.map((user) => (
+              <TabPanel className="p-3 rounded-xl bg-gray-50 overflow-auto max-h-[400px]">
+                {members.map((user) => (
                   <div
-                    key={user.id}
+                    key={user.userId}
                     className="flex items-center justify-between border-b py-4 px-6 last:border-b-0"
                   >
                     <div>
@@ -100,18 +166,18 @@ export const TeamModal = () => {
                     <div>
                       <input
                         type="checkbox"
-                        checked={!!selectedUsers[user.id]}
-                        onChange={() => handleCheckboxChange(user.id)}
+                        checked={selectedMemberIds.includes(user.userId)}
+                        onChange={() => toggleMember(user.userId)}
                         className="h-5 w-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                       />
                     </div>
                   </div>
                 ))}
               </TabPanel>
-              <TabPanel className="p-3 rounded-xl bg-gray-50">
-                {users2.map((user) => (
+              <TabPanel className="p-3 rounded-xl bg-gray-50 overflow-auto max-h-[400px]">
+                {managers.map((user) => (
                   <div
-                    key={user.id}
+                    key={user.userId}
                     className="flex items-center justify-between border-b py-4 px-6 last:border-b-0"
                   >
                     <div>
@@ -124,8 +190,8 @@ export const TeamModal = () => {
                     <div>
                       <input
                         type="checkbox"
-                        checked={!!selectedUsers[user.id]}
-                        onChange={() => handleCheckboxChange(user.id)}
+                        checked={selectedManagerIds.includes(user.userId)}
+                        onChange={() => toggleManager(user.Id)}
                         className="h-5 w-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                       />
                     </div>
@@ -143,7 +209,7 @@ export const TeamModal = () => {
             </button>
             <button
               className="hover:fill-emerald-700 hover:drop-shadow-lg hover:drop-shadow-emerald-500/50"
-              onClick={() => setIsOpen(false)}
+              onClick={handleCreate}
             >
               Create
             </button>
