@@ -36,7 +36,7 @@ const TeamList = () => {
           <TeamModal />
         </section>
       )}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 p-6">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 p-6 pb-44">
         {teams.map((team) => (
           <CustomCard
             key={team.teamId}

@@ -6,6 +6,10 @@ export const ADD_TEAM_REQUEST = "ADD_TEAM_REQUEST";
 export const ADD_TEAM_SUCCESS = "ADD_TEAM_SUCCESS";
 export const ADD_TEAM_FAILURE = "ADD_TEAM_FAILURE";
 
+export const DELETE_TEAM_REQUEST = "DELETE_TEAM_REQUEST";
+export const DELETE_TEAM_SUCCESS = "DELETE_TEAM_SUCCESS";
+export const DELETE_TEAM_FAILURE = "DELETE_TEAM_FAILURE";
+
 export const ADD_MEMBER_REQUEST = "ADD_MEMBER_REQUEST";
 export const ADD_MEMBER_SUCCESS = "ADD_MEMBER_SUCCESS";
 export const ADD_MEMBER_FAILURE = "ADD_MEMBER_FAILURE";
@@ -22,9 +26,9 @@ export const DELETE_MANAGER_REQUEST = "DELETE_MANAGER_REQUEST";
 export const DELETE_MANAGER_SUCCESS = "DELETE_MANAGER_SUCCESS";
 export const DELETE_MANAGER_FAILURE = "DELETE_MANAGER_FAILURE";
 
-export const fetchTeamRequest = (team) => ({
+export const fetchTeamRequest = (teamId) => ({
   type: FETCH_TEAM_REQUEST,
-  payload: team,
+  payload: teamId,
 });
 
 export const fetchTeamSuccess = (team) => ({
@@ -52,9 +56,24 @@ export const addTeamFailure = (error) => ({
   payload: error,
 });
 
-export const addMemberRequest = (member) => ({
+export const deleteTeamRequest = (teamId) => ({
+  type: DELETE_TEAM_REQUEST,
+  payload: { teamId },
+});
+
+export const deleteTeamSuccess = (teamId) => ({
+  type: DELETE_TEAM_SUCCESS,
+  payload: { teamId },
+});
+
+export const deleteTeamFailure = (error) => ({
+  type: DELETE_TEAM_FAILURE,
+  payload: error,
+});
+
+export const addMemberRequest = (teamId, member) => ({
   type: ADD_MEMBER_REQUEST,
-  payload: member,
+  payload: { teamId, member },
 });
 
 export const addMemberSuccess = (member) => ({
@@ -67,14 +86,14 @@ export const addMemberFailure = (error) => ({
   payload: error,
 });
 
-export const deleteMemberRequest = (memberId) => ({
+export const deleteMemberRequest = (teamId, memberId) => ({
   type: DELETE_MEMBER_REQUEST,
-  payload: memberId,
+  payload: { teamId, memberId },
 });
 
 export const deleteMemberSuccess = (memberId) => ({
   type: DELETE_MEMBER_SUCCESS,
-  payload: memberId,
+  payload: { memberId },
 });
 
 export const deleteMemberFailure = (error) => ({
@@ -82,9 +101,9 @@ export const deleteMemberFailure = (error) => ({
   payload: error,
 });
 
-export const addManagerRequest = (manager) => ({
+export const addManagerRequest = (teamId, manager) => ({
   type: ADD_MANAGER_REQUEST,
-  payload: manager,
+  payload: { teamId, manager },
 });
 
 export const addManagerSuccess = (manager) => ({
@@ -97,14 +116,14 @@ export const addManagerFailure = (error) => ({
   payload: error,
 });
 
-export const deleteManagerRequest = (managerId) => ({
+export const deleteManagerRequest = (teamId, managerId) => ({
   type: DELETE_MANAGER_REQUEST,
-  payload: managerId,
+  payload: { teamId, managerId },
 });
 
 export const deleteManagerSuccess = (managerId) => ({
   type: DELETE_MANAGER_SUCCESS,
-  payload: managerId,
+  payload: { managerId },
 });
 
 export const deleteManagerFailure = (error) => ({

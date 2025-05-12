@@ -10,6 +10,9 @@ import {
   FETCH_TEAMS_REQUEST,
   fetchTeamsSuccess,
   fetchTeamsFailure,
+  FETCH_LEADING_TEAMS_REQUEST,
+  fetchLeadingTeamsSuccess,
+  fetchLeadingTeamsFailure,
   ADD_USER_REQUEST,
   createUserSuccess,
   createUserFailure,
@@ -49,6 +52,15 @@ const TEAMS_QUERY = gql`
       teamId
       teamName
       rosterCount
+    }
+  }
+`;
+
+const LEADING_TEAMS_QUERY = gql`
+  query MyTeams($userId: ID!) {
+    myTeams(userId: $userId) {
+      teamId
+      teamName
     }
   }
 `;
@@ -115,6 +127,18 @@ function* fetchTeamsSaga(action) {
   }
 }
 
+function* fetchLeadingTeamsSaga(action) {
+  try {
+    const data = yield call([client, client.request], LEADING_TEAMS_QUERY, {
+      userId: action.payload,
+    });
+    yield put(fetchLeadingTeamsSuccess(data.teams));
+  } catch (err) {
+    const msg = err.response?.errors?.[0]?.message || err.message;
+    yield put(fetchLeadingTeamsFailure(msg));
+  }
+}
+
 function* createUserSaga(action) {
   try {
     const variables = action.payload;
@@ -134,5 +158,6 @@ export default function* userSaga() {
   yield takeLatest(FETCH_USERS_REQUEST, fetchUsersSaga);
   yield takeLatest(FETCH_USER_REQUEST, fetchUserSaga);
   yield takeLatest(FETCH_TEAMS_REQUEST, fetchTeamsSaga);
+  yield takeLatest(FETCH_LEADING_TEAMS_REQUEST, fetchLeadingTeamsSaga);
   yield takeLatest(ADD_USER_REQUEST, createUserSaga);
 }

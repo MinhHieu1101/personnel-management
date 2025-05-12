@@ -7,10 +7,10 @@ import { fetchUsersRequest } from "../redux/actions/userActions";
 import { TeamCompositionModal } from "../components/TeamCompositionModal";
 import { useNavigate } from "react-router-dom";
 
-const MemberList = () => {
+const ManagerList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, message, members } = useSelector((state) => state.user);
+  const { loading, message, managers } = useSelector((state) => state.user);
   const { user: currentUser } = useSelector((state) => state.auth);
 
   // lift modal state here to prevent re-renders
@@ -24,7 +24,7 @@ const MemberList = () => {
   }, [navigate, currentUser]);
 
   useEffect(() => {
-    dispatch(fetchUsersRequest("MEMBER"));
+    dispatch(fetchUsersRequest("MANAGER"));
   }, [dispatch]);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const MemberList = () => {
   }, [message, loading]);
 
   if (loading) {
-    return <div className="p-4">Loading members…</div>;
+    return <div className="p-4">Loading managers…</div>;
   }
 
   return (
@@ -42,7 +42,7 @@ const MemberList = () => {
       <table className="mt-4 mb-40 min-w-7xl divide-y divide-gray-200">
         <TableHead />
         <tbody className="bg-white divide-y divide-gray-200 overflow-auto">
-          {members.map((user) => (
+          {managers.map((user) => (
             <TableRow
               key={user.userId}
               id={user.userId}
@@ -71,4 +71,4 @@ const MemberList = () => {
   );
 };
 
-export default MemberList;
+export default ManagerList;

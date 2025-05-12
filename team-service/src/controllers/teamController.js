@@ -137,6 +137,19 @@ const getTeam = async (req, res, next) => {
   }
 };
 
+const removeTeam = async (req, res, next) => {
+  const { teamId } = req.params;
+  const userId = req.user.userId;
+  try {
+    const { isLeader } = await db("Rosters").where({ teamId, userId }).first();
+    if (isLeader) await db("Teams").where({ teamId }).del();
+
+    return res.status(204).json({ teamId });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const addMember = async (req, res, next) => {
   const { error, value } = memberSchema.validate(req.body);
   if (error) {
@@ -178,7 +191,7 @@ const removeMember = async (req, res, next) => {
     const task = await db("Rosters").where({ teamId, userId: memberId }).del();
     console.log(task);
 
-    return res.status(204);
+    return res.status(204).json({ memberId });
   } catch (err) {
     //console.log(err);
     next(err);
@@ -231,7 +244,7 @@ const removeManager = async (req, res, next) => {
     const task = await db("Rosters").where({ teamId, userId: managerId }).del();
     console.log(task);
 
-    return res.status(204);
+    return res.status(204).json({ managerId });
   } catch (err) {
     next(err);
   }
@@ -240,6 +253,7 @@ const removeManager = async (req, res, next) => {
 export {
   createTeam,
   getTeam,
+  removeTeam,
   addMember,
   removeMember,
   addManager,

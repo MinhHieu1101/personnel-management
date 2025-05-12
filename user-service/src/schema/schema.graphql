@@ -75,6 +75,7 @@ type Query {
   user(userId: ID!): User
   teams(userId: ID!): [Team!]!
   team(teamId: ID!): Team
+  myTeams(userId: ID!): [Team!]!
 }
 
 type Mutation {

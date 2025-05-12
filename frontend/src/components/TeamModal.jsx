@@ -13,6 +13,7 @@ import AnimatedButton from "./AnimatedButton";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsersRequest } from "../redux/actions/userActions";
+import { addTeamRequest } from "../redux/actions/teamActions";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
 
@@ -84,8 +85,7 @@ export const TeamModal = () => {
     console.log("CREATE_TEAM_REQUEST_BODY:", requestBody);
 
     try {
-      await axiosInstance.post("/", requestBody);
-      toast.success(`Team "${teamName}" created!`, { autoClose: 3000 });
+      dispatch(addTeamRequest(requestBody));
       setIsOpen(false);
       setTeamName("");
       setSelectedMemberIds([]);

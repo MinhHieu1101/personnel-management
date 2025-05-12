@@ -1,10 +1,9 @@
 import React from "react";
 import AnimatedButton from "./AnimatedButton";
-import { AiOutlineUserDelete } from "react-icons/ai";
 import { BiSolidUserDetail } from "react-icons/bi";
 
 export const TableRow = ({ id, name, email, role, c_date, onView }) => {
-  const handleDelete = (e, id) => {
+  const handleAddMember = (e, id) => {
     e.preventDefault();
     console.log(`Hello ${id}`);
   };
@@ -24,15 +23,6 @@ export const TableRow = ({ id, name, email, role, c_date, onView }) => {
           bgColor="bg-emerald-600"
           textColor="text-emerald-600"
           extra="w-22 h-10"
-        />
-        <AnimatedButton
-          onClick={(e) => handleDelete(e, id)}
-          text="Delete"
-          icon={AiOutlineUserDelete}
-          borderColor="border-rose-500"
-          bgColor="bg-rose-500"
-          textColor="text-rose-500"
-          extra="w-22 h-10 ml-2"
         />
       </td>
     </tr>

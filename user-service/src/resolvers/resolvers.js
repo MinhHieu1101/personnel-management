@@ -117,6 +117,26 @@ const resolvers = {
         totalMembers: members.length,
       };
     },
+    myTeams: async (_, { userId }) => {
+      const myTeams = await roster.findAll({
+        where: {
+          userId,
+          isLeader: true,
+        },
+        include: [
+          {
+            model: team,
+            as: "team",
+            attributes: ["teamId", "teamName"],
+          },
+        ],
+      });
+
+      return myTeams.map((roster) => ({
+        teamId: roster.team.teamId,
+        teamName: roster.team.teamName,
+      }));
+    },
   },
 
   Mutation: {

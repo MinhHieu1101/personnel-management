@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import MemberList from "./pages/Members";
+import ManagerList from "./pages/Managers";
 import TeamList from "./pages/Teams";
 import UserAuthentication from "./pages/UserAuthentication";
 
@@ -22,6 +23,7 @@ function App() {
             <Routes>
               <Route path="/" element={<UserAuthentication />} />
               <Route path="/members" element={<MemberList />} />
+              <Route path="/managers" element={<ManagerList />} />
               <Route path="/teams" element={<TeamList />} />
             </Routes>
           </BrowserRouter>

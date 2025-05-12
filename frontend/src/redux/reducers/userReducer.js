@@ -8,6 +8,9 @@ import {
   FETCH_TEAMS_REQUEST,
   FETCH_TEAMS_SUCCESS,
   FETCH_TEAMS_FAILURE,
+  FETCH_LEADING_TEAMS_REQUEST,
+  FETCH_LEADING_TEAMS_SUCCESS,
+  FETCH_LEADING_TEAMS_FAILURE,
   ADD_USER_REQUEST,
   ADD_USER_SUCCESS,
   ADD_USER_FAILURE,
@@ -60,6 +63,15 @@ const userReducer = (state = initialState, action) => {
       return { ...state, teamsLoading: false, teams: action.payload };
 
     case FETCH_TEAMS_FAILURE:
+      return { ...state, teamsLoading: false, message: action.payload };
+
+    case FETCH_LEADING_TEAMS_REQUEST:
+      return { ...state, teamsLoading: true };
+
+    case FETCH_LEADING_TEAMS_SUCCESS:
+      return { ...state, teamsLoading: false, teams: action.payload };
+
+    case FETCH_LEADING_TEAMS_FAILURE:
       return { ...state, teamsLoading: false, message: action.payload };
 
     case ADD_USER_REQUEST:

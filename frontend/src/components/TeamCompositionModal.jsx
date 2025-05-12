@@ -26,15 +26,16 @@ export const TeamCompositionModal = ({ isOpen, setIsOpen, userId }) => {
         onClose={() => setIsOpen(false)}
         className="relative z-50"
       >
+        <div className="fixed inset-0 bg-black opacity-60" aria-hidden="true" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="w-4/12 h-4/12 space-y-4 border bg-white p-12">
+          <DialogPanel className="w-8/12 min-h-5/12 max-h-11/12 space-y-4 border bg-white p-12">
             <div className="bg-gray-100 min-h-lg">
               <div className="container mx-auto p-6">
                 <div className="flex flex-wrap gap-4 justify-center">
-                  <div className="bg-white p-6 rounded-lg shadow-lg w-8/12">
+                  <div className="bg-white p-6 rounded-lg shadow-lg w-8/12 h-10/12">
                     <h2 className="text-xl font-bold mb-4">List of Teams</h2>
                     <div className="space-y-6">
-                      <div className="flex items-center space-x-2">
+                      <div className="grid grid-cols-3 gap-4 overflow-auto max-h-96">
                         {teams && teams.length > 0 ? (
                           teams.map((team) => (
                             <div

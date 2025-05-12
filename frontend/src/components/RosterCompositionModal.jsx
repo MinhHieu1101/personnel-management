@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTeamRequest } from "../redux/actions/teamActions";
+import {
+  fetchTeamRequest,
+  deleteMemberRequest,
+  deleteManagerRequest,
+} from "../redux/actions/teamActions";
 import { toast } from "react-toastify";
+import { AiOutlineUserDelete } from "react-icons/ai";
+import AnimatedButton from "./AnimatedButton";
 
 export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
   const dispatch = useDispatch();
@@ -19,6 +25,16 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
     }
   }, [message, loading]);
 
+  const handleDeleteMember = (e, id) => {
+    e.preventDefault();
+    dispatch(deleteMemberRequest(teamId, id));
+  };
+
+  const handleDeleteManager = (e, id) => {
+    e.preventDefault();
+    dispatch(deleteManagerRequest(teamId, id));
+  };
+
   return (
     <>
       <Dialog
@@ -29,9 +45,11 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
         <div className="fixed inset-0 bg-black opacity-60" aria-hidden="true" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-2">
           <DialogPanel className="w-8/12 min-h-5/12 max-h-11/12 space-y-4 border bg-white p-12">
-            <DialogTitle className="font-bold text-lg mb-1">
-              Team Composition
-            </DialogTitle>
+            {people.managers && (
+              <DialogTitle className="font-bold text-lg mb-1">
+                {people.teamName}
+              </DialogTitle>
+            )}
 
             <div className="bg-gray-100 max-h-10/12 overflow-auto">
               <div className="container mx-auto p-6">
@@ -73,10 +91,21 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
                               <h3 className="text-lg font-semibold">
                                 {person.managerName}
                               </h3>
-                              <p className="text-gray-600 text-xs">
+                              <p className="text-gray-600 text-xs max-w-52">
                                 {person.managerId}
                               </p>
                             </div>
+                            <AnimatedButton
+                              onClick={(e) =>
+                                handleDeleteManager(e, person.managerId)
+                              }
+                              text="X"
+                              icon={AiOutlineUserDelete}
+                              borderColor="border-rose-600"
+                              bgColor="bg-rose-600"
+                              textColor="text-rose-600"
+                              extra="w-10 h-8"
+                            />
                           </div>
                         ))}
                     </div>
@@ -101,10 +130,21 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
                               <h3 className="text-lg font-semibold">
                                 {person.memberName}
                               </h3>
-                              <p className="text-gray-600 text-xs">
+                              <p className="text-gray-600 text-xs max-w-52">
                                 {person.memberId}
                               </p>
                             </div>
+                            <AnimatedButton
+                              onClick={(e) =>
+                                handleDeleteMember(e, person.memberId)
+                              }
+                              text="X"
+                              icon={AiOutlineUserDelete}
+                              borderColor="border-rose-600"
+                              bgColor="bg-rose-600"
+                              textColor="text-rose-600"
+                              extra="w-10 h-8"
+                            />
                           </div>
                         ))}
                     </div>
