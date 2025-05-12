@@ -9,7 +9,7 @@ const Authentication = () => {
 
   return (
     <>
-      <div className="sm:h-[75%] h-[60%] landscape:md:h-[60%] landscape:lg:h-[75%] w-5/6 mt-10 bg-gray-50 dark:bg-slate-900 relative overflow-hidden rounded-lg">
+      <div className="sm:h-[75%] h-[60%] landscape:md:h-[60%] landscape:lg:h-[75%] mt-2 w-5/6 bg-gray-50 dark:bg-slate-900 relative overflow-hidden rounded-lg">
         <div
           id="signin"
           className={`portrait:border portrait:rounded-xl portrait:sm:border-0 portrait:sm:rounded-none dark:bg-slate-900 absolute portrait:-translate-x-0 portrait:sm:z-0 portrait:opacity-100 portrait:sm:opacity-0 top-0 left-0 portrait:h-1/2 portrait:w-full portrait:sm:h-full portrait:sm:w-1/2 h-full w-1/2 flex justify-center items-center transition-all duration-700 ease-in-out z-20 overflow-y-auto ${

@@ -49,7 +49,6 @@ const TeamList = () => {
             }}
           />
         ))}
-        <CustomCard id="546" name="hello" number="100" />
       </section>
       <RosterCompositionModal
         isOpen={isModalOpen}

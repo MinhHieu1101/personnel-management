@@ -66,7 +66,6 @@ export const TeamModal = () => {
       })
       .filter(Boolean);
 
-    // Build managers payload (exclude creator if present)
     const managersPayload = selectedManagerIds
       .filter((id) => id !== currentUser.userId)
       .map((userId) => {
@@ -85,7 +84,7 @@ export const TeamModal = () => {
     console.log("CREATE_TEAM_REQUEST_BODY:", requestBody);
 
     try {
-      /* await axiosInstance.post("/teams", requestBody); */
+      await axiosInstance.post("/", requestBody);
       toast.success(`Team "${teamName}" created!`, { autoClose: 3000 });
       setIsOpen(false);
       setTeamName("");
@@ -125,7 +124,7 @@ export const TeamModal = () => {
                 name="teamName"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
-                className="peer bg-transparent h-10 w-full rounded-full text-gray-200 placeholder-transparent ring-2 px-2 ring-gray-500 focus:ring-emerald-600 focus:outline-none"
+                className="peer bg-transparent h-10 w-full rounded-full text-slate-950 placeholder-transparent ring-2 px-2 ring-gray-500 focus:ring-emerald-600 focus:outline-none"
                 placeholder="Team Name"
               />
               <label
@@ -191,7 +190,7 @@ export const TeamModal = () => {
                       <input
                         type="checkbox"
                         checked={selectedManagerIds.includes(user.userId)}
-                        onChange={() => toggleManager(user.Id)}
+                        onChange={() => toggleManager(user.userId)}
                         className="h-5 w-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                       />
                     </div>

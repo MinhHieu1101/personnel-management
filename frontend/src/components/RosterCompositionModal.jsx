@@ -11,7 +11,6 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
   useEffect(() => {
     if (!isOpen || !teamId) return;
     dispatch(fetchTeamRequest(teamId));
-    console.log(people.teamLeader);
   }, [dispatch, isOpen, teamId]);
 
   useEffect(() => {
@@ -27,37 +26,38 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
         onClose={() => setIsOpen(false)}
         className="relative z-50"
       >
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="w-6/12 min-h-5/12 space-y-4 border bg-white p-12">
+        <div className="fixed inset-0 bg-black opacity-60" aria-hidden="true" />
+        <div className="fixed inset-0 flex w-screen items-center justify-center p-2">
+          <DialogPanel className="w-8/12 min-h-5/12 max-h-11/12 space-y-4 border bg-white p-12">
             <DialogTitle className="font-bold text-lg mb-1">
               Team Composition
             </DialogTitle>
 
-            <div className="bg-gray-100 min-h-lg">
+            <div className="bg-gray-100 max-h-10/12 overflow-auto">
               <div className="container mx-auto p-6">
                 <div className="flex flex-wrap gap-4 justify-center">
                   {/* column 1 */}
-                  <div className="bg-white p-6 rounded-lg shadow-lg w-5/12">
+                  <div className="bg-white p-6 rounded-lg shadow-lg w-5/12 max-h-[30rem] overflow-y-auto">
                     {people.managers && (
-                      <h2 className="text-xl font-bold mb-4">{`Managers (${people.managers.length + 1})`}</h2>
+                      <h2 className="text-xl font-bold mb-4">{`Managers (${
+                        people.managers.length + 1
+                      })`}</h2>
                     )}
-                    <div className="space-y-6">
+                    <div className="space-y-6 overflow-auto">
                       {people.teamLeader && (
-                        <div
-                            className="flex items-center space-x-2"
-                          >
-                            <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold">
-                              1
-                            </div>
-                            <div>
-                              <h3 className="text-lg font-semibold">
-                                {`${people.teamLeader.username} (Leader)`}
-                              </h3>
-                              <p className="text-gray-600 text-xs">
-                                {people.teamLeader.userId}
-                              </p>
-                            </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            1
                           </div>
+                          <div>
+                            <h3 className="text-lg font-semibold">
+                              {`${people.teamLeader.username} (Leader)`}
+                            </h3>
+                            <p className="text-gray-600 text-xs">
+                              {people.teamLeader.userId}
+                            </p>
+                          </div>
+                        </div>
                       )}
 
                       {people.managers &&
@@ -66,7 +66,7 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
                             key={person.managerId}
                             className="flex items-center space-x-2"
                           >
-                            <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-semibold">
                               {index + 2}
                             </div>
                             <div>
@@ -83,15 +83,18 @@ export const RosterCompositionModal = ({ isOpen, setIsOpen, teamId }) => {
                   </div>
 
                   {/* column 2 */}
-                  <div className="bg-white p-6 rounded-lg shadow-lg w-5/12">
+                  <div className="bg-white p-6 rounded-lg shadow-lg w-5/12 max-h-[30rem] overflow-y-auto">
                     {people.members && (
                       <h2 className="text-xl font-bold mb-4">{`Members (${people.members.length})`}</h2>
                     )}
                     <div className="space-y-6">
                       {people.members &&
                         people.members.map((person, index) => (
-                          <div className="flex items-center space-x-2">
-                            <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          <div
+                            key={person.memberId}
+                            className="flex items-center space-x-2"
+                          >
+                            <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white font-semibold">
                               {index + 1}
                             </div>
                             <div>

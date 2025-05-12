@@ -22,7 +22,7 @@ axiosInstance.interceptors.request.use(
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
-    console.log(`Current Token: ${accessToken}`);
+    //console.log(`Current Token: ${accessToken}`);
     return config;
   },
   (error) => Promise.reject(error)
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
     const authHeader = response.headers["authorization"];
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const newToken = authHeader.split(" ")[1];
-      console.log(`New Token: ${newToken}`);
+      //console.log(`New Token: ${newToken}`);
       sessionStorage.setItem("accessToken", newToken);
       store.dispatch(tokenRenewSuccess(newToken));
     }
@@ -67,7 +67,7 @@ axiosInstance.interceptors.response.use(
         }
       }
 
-      //store.dispatch(logout());
+      store.dispatch(logout());
     }
 
     return Promise.reject(error);
